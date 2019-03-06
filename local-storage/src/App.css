@@ -1,0 +1,75 @@
+.admin{
+  display:flex;
+  font-size: 14px;
+  margin:0px;
+  align-items: stretch;
+  flex-direction: row;
+}
+.user{
+  position:fixed;
+}
+.logo{
+  position:relative;
+  padding-top: 15px;
+  height:60px;
+  width:180px;
+}
+.navigation{
+  position:fixed;
+  width:180px;
+  height:100vmax;
+  background-color:rgba(190, 205, 216, 0.1);
+}
+.user{
+  padding:15px;
+}
+.b{
+  position:fixed;
+  margin-left:15px;
+  font-size:20px;
+  color:rgb(214, 208, 208);
+}
+.side{
+  background-color:rgba(31, 51, 66, 0.959);
+}
+.top{
+  position:fixed
+}
+.sidenav{
+  width:180px;
+  float:left;
+  box-sizing: border-box;
+}
+.link{
+  color:rgb(170, 178, 192);
+  font-size: 14px;
+  padding-left: 20px;
+}
+.tab-content{
+overflow: scroll;
+}
+.content{
+  display: flex;
+  flex-direction: column;
+  float:right;
+}
+
+.dash{
+  min-height: 60px;
+  border: 1px solid #ced4da;
+  overflow: auto;
+}
+
+.nav-link{
+  color:rgb(170, 178, 192);
+}
+.rt-td{
+  color:rgb(116, 118, 122);
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.rt-tr{
+  color:rgb(116, 118, 122);
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}

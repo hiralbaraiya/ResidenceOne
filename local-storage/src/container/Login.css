@@ -1,0 +1,32 @@
+.login-main{
+    position:relative;
+    margin-top:100px;
+    font-size: 12px;
+    background-color:#f9f9f9;
+}
+h1{
+    text-align: center;
+    color:rgba(128, 128, 128, 0.781);
+}
+.login-box{
+    width:400px;
+    margin-top:20px;
+    margin:auto;
+    border: 1px solid #ced4da;
+    color:#495057;
+}
+.box{
+    height:250px;
+    padding:15px;
+}
+.login-text{
+    padding-top:15px;
+    margin-bottom:5px;
+    margin-left:15px;
+}
+.button{
+    float:right;
+}
+.danger{
+    color:red;
+}
