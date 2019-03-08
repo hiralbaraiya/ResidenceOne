@@ -1,0 +1,50 @@
+.sidenav{
+    position:fixed;
+    background: #495b6c;
+    display:block;
+    float:left;
+    width:194px;
+    height:100%;
+}
+.topbar{
+    background: #fff;
+    border-bottom:1px solid rgba(0, 0, 0, 0.1);
+    color:#323332;
+    min-height:60px;
+    position:fixed;
+    z-index:1000;
+    padding-left:194px;
+    padding-right:10px;
+    min-width:310px;
+}
+.main{
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    display: block;
+}
+.tabcomp{
+    min-height: 200px;
+    position:relative;
+    padding-top:45px;
+    margin-left:194px;
+
+}
+.tablemain{
+    margin:0px;
+    padding-left:0px;
+}
+.inner{
+    height:650px;
+    overflow: scroll;
+
+}
+.buttonl{
+    float:left;
+    margin:12px;
+}
+.buttonr{
+    float:right;
+    margin-right:9px;
+}

@@ -2,11 +2,29 @@
   display:flex;
   font-size: 14px;
   margin:0px;
+  width:100%;
   align-items: stretch;
   flex-direction: row;
 }
+.logout{
+  float:right;
+}
+.component{
+  height:100%;
+  width:100%;
+}
+
+.tab-content{
+  overflow: scroll;
+}
+.nav-tabs{
+  background: rgb(219, 222, 226);
+}
 .user{
   position:fixed;
+ overflow: scroll;
+ height:590px;
+
 }
 .logo{
   position:relative;
@@ -18,7 +36,7 @@
   position:fixed;
   width:180px;
   height:100vmax;
-  background-color:rgba(190, 205, 216, 0.1);
+  background-color:rgba(31, 51, 66, 0.959);
 }
 .user{
   padding:15px;
@@ -45,9 +63,7 @@
   font-size: 14px;
   padding-left: 20px;
 }
-.tab-content{
-overflow: scroll;
-}
+
 .content{
   display: flex;
   flex-direction: column;

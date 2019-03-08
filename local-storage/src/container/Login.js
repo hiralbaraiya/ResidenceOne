@@ -6,7 +6,7 @@ import './Login.css';
 class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = { email: '', password: '' }
+    this.state = { email: '', password: '',error:false,validemail:true,validpass:true}
   }
 
   onChange(e, key) {
@@ -16,36 +16,49 @@ class Login extends Component {
   }
 
   onClick() {
-    axios.post('http://localhost:3000/api/user/login',
+    axios.post('http://localhost:8080/api/user/login',
       {
         email: this.state.email,
         password: this.state.password,
-        validemail:true,
-        validpassword:true
+        validemail:this.state.validemail,
+        validpassword:this.state.validpass
       })
       .then((response) => {
         console.log(response)
+        if(response.data.status===false){
+          this.setState({error:true})
+        }
+        else{
         localStorage.setItem('token', response.data.token)
         this.props.history.push('/admin/dashboard')
+        }
       })
       .catch((e) => {
         console.log(e)
       })
   }
 
-  validate(e){
-   /* let exp;
+  validate(e,statobj){
+    this.setState({error:false});
+   let exp;
     let obj;
      (e.target.placeholder==='email')?
      exp=/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
-     :exp=/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+     :exp=/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     let result=exp.test(e.target.value);
     (result)?
     obj=true
     :
-    obj=false*/
-    console.log('abc')
-    
+    obj=false
+    let valid={};
+    valid[statobj]=obj;
+    this.setState(valid);
+  }
+
+  componentWillMount(){
+    if(localStorage.getItem('token')){
+    this.props.history.push('/admin/dashboard')
+    }
   }
 
   render() {
@@ -58,14 +71,16 @@ class Login extends Component {
           <div className='box'>
             <Label><b>Email</b></Label>
             <Input
-              type='text'
+              type='email'
               placeholder='email'
               onChange={(e) => this.onChange(e, 'email')}
-              onBlur={(e)=>this.validate(e)}
+              onBlur={(e)=>this.validate(e,'validemail')}
             />
             {
-              (this.state.validemail)?
-              <Label>email is required</Label>
+              (!this.state.validemail||this.state.error)?
+              (this.state.email==='')?
+              <Label className='danger'>email is required</Label>:
+              <Label className='danger'>email is incorrect</Label>
               :
               <></>
             }
@@ -74,17 +89,20 @@ class Login extends Component {
               <b>Password</b>
             </Label>
             <Input
-              type='text'
+              type='password'
               placeholder='password'
               onChange={(e) => this.onChange(e, 'password')}
-              onBlur={(e)=>this.validate(e)}
+              onBlur={(e)=>this.validate(e,'validpass')}
             />
             {
-              (this.state.validpassword)?
-              <Label className='required'>password is required</Label>
+              (!this.state.validpass||this.state.error)?
+              (this.state.password==='')?
+              <Label className='danger'>password is required</Label>:
+              <Label className='danger'>password is incorrect</Label>
               :
               <></>
             }
+            <br></br>
             <hr></hr>
             <Button
               onClick={(e) => this.onClick()}

@@ -12,16 +12,32 @@ export default class User extends React.Component {
     this.state = {
       activeTab: '1',
       data: [] ,
-      pagesize:20
+      image:'',
+      pagesize:20,
+      totalpage:0,
+      cuurentpage:3
     };
     this.column = [
+      {
+        Header:()=>{
+          return  (<input type='checkbox'></input>)
+        },
+        Cell:()=>{
+          return  (<input type='checkbox'></input>)
+        }
+      },
         {
           Header: 'Name',
           accessor: 'fullName'
         },
         {
           Header:'profile picture',
-          accessor:'picture'
+          accessor:'picture',
+          Cell:row=>{
+            return(
+              <img src={`${this.state.image}${row.value}`} alt="user" height="15" width="15"></img>
+            )
+          }
         },
         {
           Header:'status',
@@ -60,17 +76,17 @@ export default class User extends React.Component {
   getdata=(status)=>{
     let token = localStorage.getItem('token');
     console.log(token)
-    Axios.get(`http://localhost:3000/api/user/list?page=1&limit=${this.state.pagesize}&status=${status}&`, { headers: { 'token': token } })
+    Axios.get(`http://localhost:8080/api/user/list?page=${this.state.cuurentpage}&limit=${this.state.pagesize}&status=${status}&`, { headers: { 'token': token } })
       .then((response) => {
-        console.log(response)
-        this.setState({ data: response.data.data })
+        console.log(response.data)
+        this.setState({ data: response.data.data ,image:response.data.imagePath,totalpage:Math.ceil(response.data.totalRecords/this.state.pagesize)})
       })
       .catch((e) => {
         console.log(e)
       })
   }
   componentDidUpdate(prevprops,prevstate){
-    if(this.state.pagesize!==prevprops.pagesize){
+    if(this.state.pagesize!==prevstate.pagesize){
       this.getdata(true);
     }
   }
@@ -85,12 +101,12 @@ export default class User extends React.Component {
     }
   }
   render() {
-      let styleobj={background:'gray'}
     return (
       <div className='user'>
         <h3 >User</h3>
         <hr></hr>
-        <Nav tabs style={styleobj}>
+        <div className='table-sc'>
+        <Nav tabs>
           <NavItem>
             <NavLink
               className={classnames({ active: this.state.activeTab === '1' })}
@@ -113,8 +129,14 @@ export default class User extends React.Component {
             <Row>
               <Col sm="12">
               <ReactTable
+              renderTotalPagesCount={ pages => this.state.totalpage}
+              renderCurrentPage={pages=>this.state.currentpage}
         onPageSizeChange={(p)=>{
           this.setState({pagesize:p})
+        }}
+        onPageChange={(p)=>{
+          console.log('p')
+
         }}
         className='-striped -highlight'
           data={this.state.data}
@@ -130,6 +152,7 @@ export default class User extends React.Component {
         onPageSizeChange={(p)=>{
           this.setState({pagesize:p})
         }}
+        
         className='-striped -highlight'
           data={this.state.data}
           columns={this.column}
@@ -137,7 +160,7 @@ export default class User extends React.Component {
               </Col>
             </Row>
           </TabPane>
-        </TabContent>
+        </TabContent></div>
       </div>
     );
   }

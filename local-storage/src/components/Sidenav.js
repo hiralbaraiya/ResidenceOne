@@ -5,7 +5,7 @@ import Toggler from './Toggler'
 class Sidenav extends Component{
     constructor(props){
         super(props);
-        this.state={open:false}
+        this.state={openadmin:false,openapp:false}
         this.items=['structure','user','groups']
     }
     render(){
@@ -17,14 +17,14 @@ class Sidenav extends Component{
 <Nav vertical >
           <NavItem>
           <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret onClick={()=>{this.setState({open:!this.state.open})}}>
+                <DropdownToggle nav caret onClick={()=>{this.setState({openadmin:!this.state.openadmin})}}>
                   Administration
-                </DropdownToggle>
-                <Toggler open={this.state.open} items={this.items}></Toggler>
-                <DropdownToggle nav caret>
+                </DropdownToggle >
+                <Toggler open={this.state.openadmin} items={this.items}></Toggler>
+                <DropdownToggle nav caret onClick={()=>{this.setState({openapp:!this.state.openpp})}}>
                   Application
                 </DropdownToggle>
-                <Toggler open={this.state.open} items={this.items}></Toggler>
+                <Toggler open={this.state.openapp} items={this.items}></Toggler>
                 <DropdownToggle nav caret>
                   Union Council
                 </DropdownToggle>
