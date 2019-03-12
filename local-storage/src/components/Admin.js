@@ -1,64 +1,86 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Sidenav from './Sidenav';
-import { Collapse, NavbarToggler, Navbar, Row, Col, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+import { Collapse, NavbarToggler, Navbar, Row, Col ,Button} from 'reactstrap';
 import User from '../container/User';
-import Toggler from '../components/Toggler'
 import Dashboard from '../container/Dashboard'
-import { Switch, Route,Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import Notfound from '../container/Notfound';
+import Faellips from 'react-icons/lib/fa/ellipsis-v';
 
 class Admin extends Component {
   constructor(props) {
     super(props);
-    this.state = { open: true, opendrop: false }
+    this.state = { open: true, opendrop: false ,className:'open'}
   }
 
   componentWillMount() {
     if (localStorage.getItem('token') === null || undefined) {
       this.props.history.push('/')
     }
-    else { 
-      if (this.props.location.pathname ==='/admin/'||this.props.location.pathname ==='/admin') {
-      this.props.history.push('/admin/dashboard')
+    else {
+      if (this.props.location.pathname === '/admin/' || this.props.location.pathname === '/admin') {
+        this.props.history.push('/admin/dashboard')
       }
     }
   }
 
   render() {
+   
     return (
       <div >
-       {this.props.location.state?<div><Notfound/></div>:
-        <div className='admin'>
-          <div className='side'>
-            <Collapse isOpen={this.state.open} navbar >
-              <Sidenav />
-            </Collapse>
-          </div>
-          <div className='content'>
-            <div className="dash">
-              <div className='top'>
-                <Navbar color="faded" light >
-                  <NavbarToggler onClick={() => this.setState({ open: !this.state.open })} className="mr-2" />
-                  <Link className='logout' to='/' onClick={() => { localStorage.removeItem('token') }}>Logout</Link>
-                </Navbar></div>
+        {this.props.location.state ? <div><Notfound /></div> :
+          <div>
+            <div className='main'>
+              <div>
+                  <Collapse isOpen={this.state.open} navbar >
+                  <div className='sidenav'>
+                    <Sidenav /></div>
+                  </Collapse>
+                <div className={`topbar ${this.state.className}`}>
+                <Col md={12}>
+                  <Navbar color="faded" light >
+                    <NavbarToggler 
+                    onClick={() => this.setState({open: !this.state.open },
+                      ()=>{this.setState({className:this.state.open?'open':'notopen'})}
+                      )} 
+                    />
+                    <Link className='logout' to='/' onClick={() => { localStorage.removeItem('token') }}>Logout</Link>
+                  </Navbar></Col>
+                </div></div>
+              <div className={`tabcomp ${this.state.className}`}>
+                <div className='tablemain'>
+                  <div>
+                    <Row>
+                      <Col md={12}>
+                        <h3 className='header'>user</h3>
+                        <hr></hr>
+                        <Faellips  onClick={()=>{console.log('hi')}}/>
+                        <Row>
+                          <Col md={12}>
+                            <div className='dash'>
+                              <Switch>
+                                <Route exact path='/admin' component={Dashboard} />
+                                <Route exact path='/admin/dashboard' component={Dashboard} />
+                                <Route exact path='/admin/user' component={User} />
+                                <Redirect to={{
+                                  pathname: `${this.props.location.pathname}`,
+                                  state: { error: true }
+                                }
+                                } />
+                              </Switch>
+                            </div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className='component'>
-            <Switch>
-              <Route exact path='/admin' component={Dashboard}/>
-              <Route exact path='/admin/dashboard' component={Dashboard} />
-              <Route exact path='/admin/user' component={User} />
-              <Redirect to={{
-                pathname:`${this.props.location.pathname}` ,
-                state:{error:true}}
-             
-            }/>
-              </Switch>
-            </div>
           </div>
-        </div>
-       }
+        }
       </div>
     )
   }

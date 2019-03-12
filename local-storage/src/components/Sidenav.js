@@ -1,49 +1,47 @@
 import React, { Component } from 'react';
-import { Nav, NavItem,UncontrolledDropdown,DropdownToggle} from 'reactstrap';
-import Toggler from './Toggler'
+import { Nav, UncontrolledDropdown, DropdownToggle, Dropdown } from 'reactstrap';
+import Toggler from './Toggler';
+import FaArrowDown from 'react-icons/lib/io/android-arrow-dropdown-circle';
+import FaArrowUp from 'react-icons/lib/io/android-arrow-dropup-circle';
+class Sidenav extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { open: false, opencomp: '' }
+    this.items = ['structure', 'user', 'groups']
+    this.list = ['Administration', 'Application', 'Union Council', 'Residence', 'Owners', 'Public']
+  }
 
-class Sidenav extends Component{
-    constructor(props){
-        super(props);
-        this.state={openadmin:false,openapp:false}
-        this.items=['structure','user','groups']
-    }
-    render(){
-        return(
-<div className='inner'>
-<div className='logo'>
-<b className='b'>LA CADENELLE </b></div>
-<div className='navigation'>
-<Nav vertical >
-          <NavItem>
-          <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret onClick={()=>{this.setState({openadmin:!this.state.openadmin})}}>
-                  Administration
-                </DropdownToggle >
-                <Toggler open={this.state.openadmin} items={this.items}></Toggler>
-                <DropdownToggle nav caret onClick={()=>{this.setState({openapp:!this.state.openpp})}}>
-                  Application
-                </DropdownToggle>
-                <Toggler open={this.state.openapp} items={this.items}></Toggler>
-                <DropdownToggle nav caret>
-                  Union Council
-                </DropdownToggle>
-                <DropdownToggle nav caret>
-                  Residence
-                </DropdownToggle>
-                <DropdownToggle nav caret>
-                  owners
-                </DropdownToggle>
-                <DropdownToggle nav caret>
-                  Public
-                </DropdownToggle>
-              </UncontrolledDropdown>
-             
-          </NavItem>
-        </Nav></div>
-</div>
-        )
-    }
+  toggle(name) {
+    (this.state.opencomp !== name) ? (this.state.opencomp === '') ?
+      this.setState({ open: !this.state.open, opencomp: name }) :
+      this.setState({ opencomp: name }) :
+      this.setState({ open: !this.state.open })
+  }
+
+  render() {
+    return (
+      <div className='inner'>
+        <div className='logo'>
+          <b className='b'>LA CADENELLE </b></div>
+        <div className='navigation'>
+          <Nav vertical >
+            <UncontrolledDropdown nav inNavbar>
+              {this.list.map((name) => {
+                return (
+                  <div>
+                    <Dropdown nav caret onClick={() => this.toggle(name)}>
+                      {name} {this.state.open && this.state.opencomp === name ?
+                         <FaArrowUp className='icon' /> :
+                          <FaArrowDown className='icon' />}
+                    </Dropdown >
+                    <Toggler open={this.state.open && this.state.opencomp === name} items={this.items}/>
+                  </div>)
+              })}
+            </UncontrolledDropdown>
+          </Nav></div>
+      </div>
+    )
+  }
 }
 
 export default Sidenav;

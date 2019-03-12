@@ -1,31 +1,8 @@
-.admin{
-  display:flex;
-  font-size: 14px;
-  margin:0px;
-  width:100%;
-  align-items: stretch;
-  flex-direction: row;
-}
-.logout{
-  float:right;
-}
-.component{
-  height:100%;
-  width:100%;
-}
 
-.tab-content{
-  overflow: scroll;
-}
 .nav-tabs{
   background: rgb(219, 222, 226);
 }
-.user{
-  position:fixed;
- overflow: scroll;
- height:590px;
 
-}
 .logo{
   position:relative;
   padding-top: 15px;
@@ -38,47 +15,36 @@
   height:100vmax;
   background-color:rgba(31, 51, 66, 0.959);
 }
-.user{
-  padding:15px;
-}
+
 .b{
   position:fixed;
   margin-left:15px;
   font-size:20px;
   color:rgb(214, 208, 208);
 }
-.side{
-  background-color:rgba(31, 51, 66, 0.959);
+.icon{
+  float:right;
+  margin:5px;
+  fill:#65cea7;
 }
-.top{
-  position:fixed
+.link:hover{
+  text-decoration: none;
+  font-size: 16px;
+  margin-left: 20px;
+  color:rgb(170, 178, 192);
 }
-.sidenav{
-  width:180px;
-  float:left;
-  box-sizing: border-box;
-}
+
 .link{
   color:rgb(170, 178, 192);
   font-size: 14px;
   padding-left: 20px;
 }
 
-.content{
-  display: flex;
-  flex-direction: column;
-  float:right;
-}
-
-.dash{
-  min-height: 60px;
-  border: 1px solid #ced4da;
-  overflow: auto;
-}
-
-.nav-link{
+.dropdown{
+  padding:5px;
   color:rgb(170, 178, 192);
 }
+
 .rt-td{
   color:rgb(116, 118, 122);
   font-size: 12px;

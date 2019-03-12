@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Login from './container/Login';
 import Home from './container/Home';
@@ -14,7 +13,7 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
-          <Route static path="/admin" component={Admin} />
+          <Route  path="/admin" component={Admin} />
           <Route component={Notfound}/>
         </Switch>
       </Router>
