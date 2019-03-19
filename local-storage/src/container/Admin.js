@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import '../App.css';
-import Sidenav from './Sidenav';
-import { Collapse, NavbarToggler, Navbar, Row, Col ,Button} from 'reactstrap';
-import User from '../container/User';
-import Dashboard from '../container/Dashboard'
+import Sidenav from '../components/Sidenav';
+import { Collapse, NavbarToggler, Navbar, Row, Col ,DropdownItem,DropdownMenu,DropdownToggle,UncontrolledDropdown} from 'reactstrap';
+import User from './User';
+import Dashboard from './Dashboard'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
-import Notfound from '../container/Notfound';
-import Faellips from 'react-icons/lib/fa/ellipsis-v';
+import Notfound from './Notfound';
+import {Dropdown} from '../components/Dropdown'
 
 class Admin extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class Admin extends Component {
 
   componentWillMount() {
     if (localStorage.getItem('token') === null || undefined) {
-      this.props.history.push('/')
+      this.props.history.push('/login')
     }
     else {
       if (this.props.location.pathname === '/admin/' || this.props.location.pathname === '/admin') {
@@ -27,7 +27,7 @@ class Admin extends Component {
   }
 
   render() {
-   
+    let name=this.props.location.pathname
     return (
       <div >
         {this.props.location.state ? <div><Notfound /></div> :
@@ -40,13 +40,15 @@ class Admin extends Component {
                   </Collapse>
                 <div className={`topbar ${this.state.className}`}>
                 <Col md={12}>
-                  <Navbar color="faded" light >
+                  <Navbar id='navbar' color="faded" light >
                     <NavbarToggler 
                     onClick={() => this.setState({open: !this.state.open },
                       ()=>{this.setState({className:this.state.open?'open':'notopen'})}
                       )} 
                     />
-                    <Link className='logout' to='/' onClick={() => { localStorage.removeItem('token') }}>Logout</Link>
+                    <Dropdown icon={<img src={`http://localhost:8080/images/lacadenelle13008fr/users/hi.png`} alt="user"></img>}
+                    list={[ <Link  to='/' onClick={() => { localStorage.removeItem('token') }}>Logout</Link>]}
+                    ></Dropdown>
                   </Navbar></Col>
                 </div></div>
               <div className={`tabcomp ${this.state.className}`}>
@@ -54,10 +56,8 @@ class Admin extends Component {
                   <div>
                     <Row>
                       <Col md={12}>
-                        <h3 className='header'>user</h3>
-                        <hr></hr>
-                        <Faellips  onClick={()=>{console.log('hi')}}/>
-                        <Row>
+                        <h3 className='header'>{name.slice(7).charAt(0).toUpperCase()+name.slice(8)}</h3>
+                          <Row>
                           <Col md={12}>
                             <div className='dash'>
                               <Switch>

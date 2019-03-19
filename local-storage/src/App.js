@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Login from './container/Login';
 import Home from './container/Home';
-import Admin from './components/Admin';
+import Admin from './container/Admin';
 import Notfound from './container/Notfound';
 
 class App extends Component {

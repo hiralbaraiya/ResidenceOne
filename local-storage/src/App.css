@@ -9,13 +9,23 @@
   height:60px;
   width:180px;
 }
+img{
+  width:40px;
+  height:40px;
+  border-radius: 25px;
+}
+#navbar{
+  padding:0px;
+}
 .navigation{
   position:fixed;
   width:180px;
   height:100vmax;
   background-color:rgba(31, 51, 66, 0.959);
 }
-
+.drop{
+  background: #f9f9f9;
+}
 .b{
   position:fixed;
   margin-left:15px;

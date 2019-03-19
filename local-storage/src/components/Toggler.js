@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Collapse ,Nav,NavItem} from 'reactstrap';
 import {Link} from 'react-router-dom';
+import User from 'react-icons/lib/fa/user'
 
 class Toggler extends Component{
 
@@ -12,7 +13,8 @@ class Toggler extends Component{
                 this.props.items.map((name,i)=>{
                   return(
                     <NavItem key={i}>
-              <Link to={`/admin/${name}`} className='link'>{name}</Link>
+                   
+              <Link to={`/admin/${name}`} className='link'>{name}<User/></Link>
               </NavItem>
                   )
                 })
