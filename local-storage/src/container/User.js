@@ -1,11 +1,12 @@
 import React from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col ,Input} from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button } from 'reactstrap';
 import classnames from 'classnames';
 import ReactTable from "react-table";
 import 'react-table/react-table.css';
 import Axios from 'axios';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
-import {Dropdown} from '../components/Dropdown'
+import { Dropdown } from '../components/Dropdown';
+import Model from '../components/Model'
 
 export default class User extends React.Component {
   constructor(props) {
@@ -17,9 +18,10 @@ export default class User extends React.Component {
       pagesize: 20,
       totalpage: 0,
       page: 1,
-      name:'',
-      filterurl:'',
-      sorturl:''
+      name: '',
+      filterurl: '',
+      sorturl: '',
+      modal:false
     };
 
     this.column = [
@@ -35,10 +37,10 @@ export default class User extends React.Component {
         filterable: true,
         Header: 'Name',
         accessor: 'fullName',
-      
+
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'profile picture',
         accessor: 'picture',
         Cell: row => {
@@ -48,12 +50,12 @@ export default class User extends React.Component {
         }
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'status',
         accessor: 'status'
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'main unit id',
       },
       {
@@ -62,15 +64,15 @@ export default class User extends React.Component {
         accessor: 'personStatus'
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'bulding'
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'Type of unit'
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'Entry'
       },
       {
@@ -79,7 +81,7 @@ export default class User extends React.Component {
         accessor: 'email'
       },
       {
-        sortable:false,
+        sortable: false,
         Header: 'Date of birth',
       },
       {
@@ -103,7 +105,7 @@ export default class User extends React.Component {
         console.log(e)
       })
   }
-  
+
   componentWillMount() {
     this.getdata(true);
   }
@@ -111,38 +113,48 @@ export default class User extends React.Component {
   toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       let status = (this.state.activeTab !== '1') ? true : false;
-      this.getdata(status,'')
-      this.setState({ activeTab: tab, page: 1,sorturl:'',filterurl:'' })
+      this.getdata(status, '')
+      this.setState({ activeTab: tab, page: 1, sorturl: '', filterurl: '' })
     }
   }
 
-  filter(e,status){
+  filter(e, status) {
     console.log(e)
-    let url=''
-    let id=''
-    e?
-    e.map((list)=>{
-     if(list.id==='fullName'){id='name'}
-     else{id=list.id}
-      url=`${url}${id}=${list.value}&`
-      console.log(url)
-    })
-    :
-    console.log(null)
-    this.setState({filterurl:url},()=>{this.getdata(status)}) 
+    let url = ''
+    let id = ''
+    e ?
+      e.map((list) => {
+        if (list.id === 'fullName') { id = 'name' }
+        else { id = list.id }
+        url = `${url}${id}=${list.value}&`
+        console.log(url)
+      })
+      :
+      console.log(null)
+    this.setState({ filterurl: url }, () => { this.getdata(status) })
   }
 
- Sort(e,status){
-   console.log(e)
-   let id=''
-   if(e[0].id==='fullName'){id='name'}
-   else{id=e[0].id}
-   let url=`field=${id}&sort=${e[0].desc?'desc':'asc'}`
-   this.setState({sorturl:url},()=>{this.getdata(status)}) 
- }
+  Sort(e, status) {
+    console.log(e)
+    let id = ''
+    if (e[0].id === 'fullName') { id = 'name' }
+    else { id = e[0].id }
+    let url = `field=${id}&sort=${e[0].desc ? 'desc' : 'asc'}`
+    this.setState({ sorturl: url }, () => { this.getdata(status) })
+  }
+
+  togglemodal() {
+    this.setState({ modal: !this.state.modal});
+  }
+
+setdata(e,id){
+  let obj={};
+  obj[id]=e
+  this.setState(obj)
+}
 
   render() {
-    console.log('prop:',this.props)
+    console.log('prop:', this.props)
     return (
       <div className='table-sc'>
         <Nav tabs>
@@ -164,20 +176,29 @@ export default class User extends React.Component {
           </NavItem>
         </Nav>
         <TabContent activeTab={this.state.activeTab}>
-        <Dropdown className='drop' style={{margin:0}} icon={<Faellips/>} list={['Add new user','Send notification','Pre-prepared notification','Help']}/>
+          <Dropdown className='drop'
+            style={{ margin: 0 }}
+            icon={<Faellips />}
+            list={[<Button color='link' onClick={() => this.togglemodal()}>Add new user</Button>,
+              'Send notification',
+              'Pre-prepared notification',
+              'Help']} />
+              <Model modal={this.state.modal} toggle={()=>{this.togglemodal()}}
+              setdata={(e,id)=>{this.setdata(e,id)}}
+              />
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
                 <ReactTable
                   manual
-                  onFilteredChange={(e)=>this.filter(e,true)}
-                  onSortedChange={e=>{this.Sort(e,true)}}
+                  onFilteredChange={(e) => this.filter(e, true)}
+                  onSortedChange={e => { this.Sort(e, true) }}
                   pages={this.state.totalpage}
                   page={this.state.page - 1}
                   onPageSizeChange={(p) => {
-                    this.setState({ pagesize: p },()=>{this.getdata(false)})
+                    this.setState({ pagesize: p }, () => { this.getdata(false) })
                   }}
-                  onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(true,'') }) }}
+                  onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(true, '') }) }}
                   className='-striped -highlight'
                   data={this.state.data}
                   columns={this.column}
@@ -192,12 +213,12 @@ export default class User extends React.Component {
                   manual
                   data={this.state.data}
                   columns={this.column}
-                  onFilteredChange={(e)=>this.filter(e,false)}
-                  onSortedChange={e=>{this.Sort(e,false)}}
+                  onFilteredChange={(e) => this.filter(e, false)}
+                  onSortedChange={e => { this.Sort(e, false) }}
                   pages={this.state.totalpage}
                   page={this.state.page - 1}
                   onPageSizeChange={(p) => {
-                    this.setState({ pagesize: p },()=>{this.getdata(false)})
+                    this.setState({ pagesize: p }, () => { this.getdata(false) })
                   }}
                   onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(false) }) }}
                   className='-striped -highlight'
@@ -206,7 +227,7 @@ export default class User extends React.Component {
             </Row>
           </TabPane>
         </TabContent>
-        </div>
+      </div>
     );
   }
 }
