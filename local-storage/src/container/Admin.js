@@ -7,6 +7,7 @@ import Dashboard from './Dashboard'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import Notfound from './Notfound';
+import Profile from './Profile'
 import {Dropdown} from '../components/Dropdown'
 
 class Admin extends Component {
@@ -63,7 +64,8 @@ class Admin extends Component {
                               <Switch>
                                 <Route exact path='/admin' component={Dashboard} />
                                 <Route exact path='/admin/dashboard' component={Dashboard} />
-                                <Route exact path='/admin/user' component={User} />
+                                <Route exact path='/admin/users' component={User} />
+                                <Route exact path='/admin/users/:id' component={Profile}/>
                                 <Redirect to={{
                                   pathname: `${this.props.location.pathname}`,
                                   state: { error: true }

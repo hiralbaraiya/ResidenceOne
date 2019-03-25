@@ -8,8 +8,13 @@ class Sidenav extends Component {
   constructor(props) {
     super(props);
     this.state = { open: false, opencomp: '' }
-    this.items = ['structure', 'user', 'groups']
-    this.list = ['Administration', 'Application', 'Union Council', 'Residence', 'Owners', 'Public']
+    this.list = [
+      {name:'Administration',items:['Structure','Units', 'Users', 'Groups','Families','Owners','Vehicles','Documents','Events','News feed','Pool','Issue tracking','Contact','Settings']}
+    , {name:'Application',items:['Pool','Reception','Notifications','Vehicles','Issue tracking','Contact']},
+     {name:'Union Council',items:['Members','Documents','Contacts','Discussions','News feed','Issue tracking']},
+     {name:'Residence',items:['Dashboard','Events','Issue tracking','Bus','Documents','News feed','Contacts','Restaurant','Reservations','Services','Groups','Ideas']},
+     {name:'Owners',items:['Dashboard','Documents','News feed','Issue tracking','Contacts']},
+     {name: 'Public',items:['Website','Blog','Documents']}]
   }
 
   toggle(name) {
@@ -27,15 +32,15 @@ class Sidenav extends Component {
         <div className='navigation'>
           <Nav vertical >
             <UncontrolledDropdown nav inNavbar>
-              {this.list.map((name) => {
+              {this.list.map((key) => {
                 return (
                   <div>
-                    <Dropdown nav caret onClick={() => this.toggle(name)}>
-                      {name} {this.state.open && this.state.opencomp === name ?
+                    <Dropdown nav caret onClick={() => this.toggle(key.name)}>
+                      {key.name} {this.state.open && this.state.opencomp === key.name ?
                          <FaArrowUp className='icon' /> :
                           <FaArrowDown className='icon' />}
                     </Dropdown >
-                    <Toggler open={this.state.open && this.state.opencomp === name} items={this.items}/>
+                    <Toggler open={this.state.open && this.state.opencomp === key.name} items={key.items}/>
                   </div>)
               })}
             </UncontrolledDropdown>

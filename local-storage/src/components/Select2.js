@@ -8,7 +8,7 @@ class Select extends Component {
   constructor(props) {
     super(props)
     this.state = { default: [] }
-    this.getOptions = debounce(this.getTypeOptions.bind(this), 800);
+    this.Debounce = debounce((e, callback) => optionfilter(e, callback), 800);
   }
 
   componentWillMount() {
@@ -24,42 +24,29 @@ class Select extends Component {
          }
          response.push(obj);
        })
-
-       this.setState({default:response},()=>{console.log(this.state)})
-
+       this.setState({default:response})
       })
       .catch((e) => {
         console.log(e)
       })
   }
 
-
-   getTypeOptions(e, callback) {
-        let response = [];
-        this.state.default.map(() => {
-          return response;
-        });
-        callback(this.optionfilter(e));
-      
-  }
-
- optionfilter(e) {
+  optionfilter(e) {
     const result = this.state.default.filter(i =>
       i.label.toLowerCase().includes(e.toLowerCase())
     );
     return result;
   }
 
-
  
 
 render(){
   return(
-    <div>
-    <Label><b>Position</b></Label>
-    <AsyncSelect
+    <div className='row form-group'>
+    <Label>Position</Label>
+    <AsyncSelect className='col-sm-8'
       isClearable
-      loadOptions={this.getOptions}
+      loadOptions={Debounce}
       defaultOptions={this.state.default}
     />
   </div>

@@ -37,12 +37,17 @@ img{
   margin:5px;
   fill:#65cea7;
 }
+.togglebutton{
+  width:40px;
+}
 .link:hover{
   text-decoration: none;
   font-size: 16px;
   margin-left: 20px;
   color:rgb(170, 178, 192);
 }
+
+
 
 .link{
   color:rgb(170, 178, 192);

@@ -6,7 +6,8 @@ import 'react-table/react-table.css';
 import Axios from 'axios';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
-import Model from '../components/Model'
+import Model from '../components/Model';
+import { Link } from 'react-router-dom';
 
 export default class User extends React.Component {
   constructor(props) {
@@ -37,7 +38,9 @@ export default class User extends React.Component {
         filterable: true,
         Header: 'Name',
         accessor: 'fullName',
-
+        Cell: (row) => {
+          return (<Link to={`users/${row.original.id}`}>{row.value}</Link>)
+        }
       },
       {
         sortable: false,
