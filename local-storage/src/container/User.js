@@ -13,6 +13,8 @@ export default class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      selected: {},
+       selectAll: 0,
       activeTab: '1',
       data: [],
       image: '',
@@ -22,16 +24,30 @@ export default class User extends React.Component {
       name: '',
       filterurl: '',
       sorturl: '',
-      modal:false
+      modal: false
     };
+
+    this.toggleRow = this.toggleRow.bind(this);
 
     this.column = [
       {
+        sortable:false,
         Header: () => {
-          return (<input type='checkbox'></input>)
+          return (<input type='checkbox'
+            checked={this.state.selectAll === 1}
+            ref={input => {
+              if (input) {
+                input.indeterminate = this.state.selectAll === 2;
+              }
+            }}
+            onChange={() => this.toggleSelectAll()}
+          />)
         },
-        Cell: () => {
-          return (<input type='checkbox'></input>)
+        Cell: ({original}) => {
+          return (<input type='checkbox'
+            checked={this.state.selected[original.firstName] === true}
+            onChange={() => this.toggleRow(original.firstName)}
+          />)
         }
       },
       {
@@ -48,7 +64,7 @@ export default class User extends React.Component {
         accessor: 'picture',
         Cell: row => {
           return (
-            <img src={`${this.state.image}${row.value}`} alt="user" height="15" width="15"></img>
+            <img className='image' src={`${this.state.image}${row.value}`} alt="user" height="15" width="15"></img>
           )
         }
       },
@@ -57,43 +73,115 @@ export default class User extends React.Component {
         Header: 'status',
         accessor: 'status'
       },
-      {
-        sortable: false,
-        Header: 'main unit id',
-      },
+      // {
+      //   sortable: false,
+      //   Header: 'main unit id',
+      // },
       {
         filterable: true,
         Header: 'Position',
         accessor: 'personStatus'
       },
-      {
-        sortable: false,
-        Header: 'bulding'
-      },
-      {
-        sortable: false,
-        Header: 'Type of unit'
-      },
-      {
-        sortable: false,
-        Header: 'Entry'
-      },
+      // {
+      //   sortable: false,
+      //   Header: 'bulding'
+      // },
+      // {
+      //   sortable: false,
+      //   Header: 'Type of unit'
+      // },
+      // {
+      //   sortable: false,
+      //   Header: 'Entry'
+      // },
       {
         filterable: true,
         Header: 'Email',
         accessor: 'email'
       },
-      {
-        sortable: false,
-        Header: 'Date of birth',
-      },
+      // {
+      //   sortable: false,
+      //   Header: 'Date of birth',
+      // },
       {
         filterable: true,
         Header: 'Mobile number',
         accessor: 'telephone'
       },
-
+      {
+        sortable: false,
+        Header: '',
+        minWidth: 40,
+        style: { 'overflow': 'visible' },
+        accessor: 'id',
+        Cell: row => {
+          return (
+            <Dropdown
+              icon={<Faellips />}
+              list={[<Button color='link' onClick={() => this.markhandicap(row.value, row.original.isHandicapped, row.index)}>{row.original.isHandicapped === 1 ? <p>Mark as Not Handicapped</p> : <p>mark as Handicapped</p>}</Button>,
+              <Button color='link' onClick={() => this.edit(row.value, row.original.status, row.index)}>{row.original.status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
+              ]} />
+          )
+        }
+      }
     ]
+  }
+
+  toggleRow(firstName) {
+		const newSelected = {...this.state.selected};
+		newSelected[firstName] = !this.state.selected[firstName];
+		this.setState({
+			selected: newSelected,
+			selectAll: 2
+		});
+	}
+
+	toggleSelectAll() {
+		let newSelected = {};
+
+		if (this.state.selectAll === 0) {
+			this.state.data.forEach(x => {
+				newSelected[x.firstName] = true;
+			});
+		}
+
+		this.setState({
+			selected: newSelected,
+			selectAll: this.state.selectAll === 0 ? 1 : 0
+		});
+	}
+
+  edit(id, status, index) {
+    console.log(status)
+    if (window.confirm("Are you sure you want to change user status from active to inactive?")) {
+      let token = localStorage.getItem('token');
+      Axios.get(`http://localhost:8080/api/user/updateStatus/${id}/${status==='1'?0:1}`, { headers: { 'token': token } })
+        .then((response) => {
+          console.log(response)
+          this.getdata(status==='1'?true:false)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
+  }
+  markhandicap(id, status, index) {
+    console.log('adduser')
+    if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
+      let token = localStorage.getItem('token');
+      Axios.post(`http://localhost:8080/api/user//updateisHandicapped/${status === 1 ? 0 : 1}`,
+        { 'userId': id }, { headers: { 'token': token } })
+
+        .then((response) => {
+          console.log(response)
+          let obj = { ...this.state.data }
+          obj[index].isHandicapped = status === 1 ? 0 : 1
+          this.setState({ obj })
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
   }
 
   getdata = (status) => {
@@ -147,14 +235,14 @@ export default class User extends React.Component {
   }
 
   togglemodal() {
-    this.setState({ modal: !this.state.modal});
+    this.setState({ modal: !this.state.modal });
   }
 
-setdata(e,id){
-  let obj={};
-  obj[id]=e
-  this.setState(obj)
-}
+  setdata(e, id) {
+    let obj = {};
+    obj[id] = e
+    this.setState(obj)
+  }
 
   render() {
     console.log('prop:', this.props)
@@ -186,9 +274,9 @@ setdata(e,id){
               'Send notification',
               'Pre-prepared notification',
               'Help']} />
-              <Model modal={this.state.modal} toggle={()=>{this.togglemodal()}}
-              setdata={(e,id)=>{this.setdata(e,id)}}
-              />
+          <Model modal={this.state.modal} toggle={() => { this.togglemodal() }}
+            setdata={(e, id) => { this.setdata(e, id) }}
+          />
           <TabPane tabId="1">
             <Row>
               <Col sm="12">

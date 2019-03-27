@@ -47,7 +47,7 @@ class Admin extends Component {
                       ()=>{this.setState({className:this.state.open?'open':'notopen'})}
                       )} 
                     />
-                    <Dropdown icon={<img src={`http://localhost:8080/images/lacadenelle13008fr/users/hi.png`} alt="user"></img>}
+                    <Dropdown icon={<img className='image' src={`http://localhost:8080/images/lacadenelle13008fr/users/hi.png`} alt="user"></img>}
                     list={[ <Link  to='/' onClick={() => { localStorage.removeItem('token') }}>Logout</Link>]}
                     ></Dropdown>
                   </Navbar></Col>
