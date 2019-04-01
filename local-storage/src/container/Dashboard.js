@@ -6,6 +6,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div >
+         <h3 className='header'>Dashboard</h3>
         Dashboard
       </div>
     )

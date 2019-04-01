@@ -9,12 +9,12 @@ class Sidenav extends Component {
     super(props);
     this.state = { open: false, opencomp: '' }
     this.list = [
-      {name:'Administration',items:['Structure','Units', 'Users', 'Groups','Families','Owners','Vehicles','Documents','Events','News feed','Pool','Issue tracking','Contact','Settings']}
-    , {name:'Application',items:['Pool','Reception','Notifications','Vehicles','Issue tracking','Contact']},
-     {name:'Union Council',items:['Members','Documents','Contacts','Discussions','News feed','Issue tracking']},
-     {name:'Residence',items:['Dashboard','Events','Issue tracking','Bus','Documents','News feed','Contacts','Restaurant','Reservations','Services','Groups','Ideas']},
-     {name:'Owners',items:['Dashboard','Documents','News feed','Issue tracking','Contacts']},
-     {name: 'Public',items:['Website','Blog','Documents']}]
+      {name:'Administration',path:'admin',items:['Structure','Units', 'Users', 'Groups','Families','Owners','Vehicles','Documents','Events','News feed','Pool','Issue tracking','Contact','Settings']}
+    , {name:'Application',path:'apps',items:['Pool','Reception','Notifications','Vehicles','Issue tracking','Contact']},
+     {name:'Union Council',path:'council',items:['Members','Documents','Contacts','Discussions','News feed','Issue tracking']},
+     {name:'Residence',path:'residents',items:['Dashboard','Events','Issue tracking','Bus','Documents','News feed','Contacts','Restaurant','Reservations','Services','Groups','Ideas']},
+     {name:'Owners',path:'owners',items:['Dashboard','Documents','News feed','Issue tracking','Contacts']},
+     {name: 'Public',path:'public',items:['Website','Blog','Documents']}]
   }
 
   toggle(name) {
@@ -40,7 +40,7 @@ class Sidenav extends Component {
                          <FaArrowUp className='icon' /> :
                           <FaArrowDown className='icon' />}
                     </Dropdown >
-                    <Toggler open={this.state.open && this.state.opencomp === key.name} items={key.items}/>
+                    <Toggler open={this.state.open && this.state.opencomp === key.name} path={key.path} items={key.items}/>
                   </div>)
               })}
             </UncontrolledDropdown>

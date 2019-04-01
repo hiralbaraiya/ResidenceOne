@@ -7,7 +7,8 @@ import Dashboard from './Dashboard'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import Notfound from './Notfound';
-import Profile from './Profile'
+import Profile from './Profile';
+import Reception from './Reception'
 import {Dropdown} from '../components/Dropdown'
 
 class Admin extends Component {
@@ -57,7 +58,7 @@ class Admin extends Component {
                   <div>
                     <Row>
                       <Col md={12}>
-                        <h3 className='header'>{name.slice(7).charAt(0).toUpperCase()+name.slice(8)}</h3>
+                       
                           <Row>
                           <Col md={12}>
                             <div className='dash'>
@@ -66,6 +67,7 @@ class Admin extends Component {
                                 <Route exact path='/admin/dashboard' component={Dashboard} />
                                 <Route exact path='/admin/users' component={User} />
                                 <Route exact path='/admin/users/:id' component={Profile}/>
+                               <Route exact path='/apps/Reception' component={Reception}/>
                                 <Redirect to={{
                                   pathname: `${this.props.location.pathname}`,
                                   state: { error: true }

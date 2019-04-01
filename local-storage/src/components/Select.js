@@ -13,14 +13,19 @@ class Select extends Component {
 
   componentWillMount() {
     let token = localStorage.getItem('token');
-    axios.get(`http://localhost:8080/api/position/list`,
+    let append;
+    this.props.url?append=this.props.url:append='/position/list'
+    axios.get(`http://localhost:8080/api${append}`,
       { headers: { 'token': token } })
       .then((res) => {
        let response=[]
        res.data.data.map((key)=>{
+        let labelname
+        this.props.value?labelname=this.props.value:labelname='shortName'
          let obj={
+           
           value: key.name,
-          label: key.shortName
+          label: key[labelname]
          }
          response.push(obj);
        })
@@ -56,7 +61,6 @@ class Select extends Component {
 render(){
   return(
     <div>
-    <Label><b>Position</b></Label>
     <AsyncSelect
       isClearable
       loadOptions={this.getOptions}

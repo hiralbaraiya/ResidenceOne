@@ -8,6 +8,7 @@ import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
 import Model from '../components/Model';
 import { Link } from 'react-router-dom';
+import Notification from '../components/Notification'
 
 export default class User extends React.Component {
   constructor(props) {
@@ -24,6 +25,7 @@ export default class User extends React.Component {
       name: '',
       filterurl: '',
       sorturl: '',
+      notify:false,
       modal: false
     };
 
@@ -120,7 +122,8 @@ export default class User extends React.Component {
               icon={<Faellips />}
               list={[<Button color='link' onClick={() => this.markhandicap(row.value, row.original.isHandicapped, row.index)}>{row.original.isHandicapped === 1 ? <p>Mark as Not Handicapped</p> : <p>mark as Handicapped</p>}</Button>,
               <Button color='link' onClick={() => this.edit(row.value, row.original.status, row.index)}>{row.original.status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
-              ]} />
+             ,row.original.family===null?'':<Button color='link'>go to family</Button>
+            ]} />
           )
         }
       }
@@ -237,6 +240,14 @@ export default class User extends React.Component {
   togglemodal() {
     this.setState({ modal: !this.state.modal });
   }
+notify(){
+  if(this.state.selectAll===0){
+    alert('select atleast one')
+  }
+  else{
+    this.setState({notify:!this.state.notify})
+  }
+}
 
   setdata(e, id) {
     let obj = {};
@@ -248,6 +259,7 @@ export default class User extends React.Component {
     console.log('prop:', this.props)
     return (
       <div className='table-sc'>
+       <h3 className='header'>Users</h3>
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -271,12 +283,14 @@ export default class User extends React.Component {
             style={{ margin: 0 }}
             icon={<Faellips />}
             list={[<Button color='link' onClick={() => this.togglemodal()}>Add new user</Button>,
-              'Send notification',
+            <Button color='link' onClick={() => this.notify()}>Send notification</Button>
+              ,
               'Pre-prepared notification',
               'Help']} />
           <Model modal={this.state.modal} toggle={() => { this.togglemodal() }}
             setdata={(e, id) => { this.setdata(e, id) }}
           />
+          <Notification isOpen={this.state.notify} toggle={()=>{this.notify()}}/>
           <TabPane tabId="1">
             <Row>
               <Col sm="12">

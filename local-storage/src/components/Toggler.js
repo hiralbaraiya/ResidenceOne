@@ -14,7 +14,7 @@ class Toggler extends Component{
                   return(
                     <NavItem key={i}>
                    
-              <Link to={`/admin/${name}`} className='link'>{name}<User/></Link>
+              <Link to={`/${this.props.path}/${name}`} className='link'>{name}<User/></Link>
               </NavItem>
                   )
                 })
