@@ -1,14 +1,14 @@
 import React from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button,Input } from 'reactstrap';
 import classnames from 'classnames';
-import ReactTable from "react-table";
-import 'react-table/react-table.css';
+import FaWheelChair from 'react-icons/lib/fa/wheelchair'
 import Axios from 'axios';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
 import Model from '../components/Model';
 import { Link } from 'react-router-dom';
 import Notification from '../components/Notification'
+import Table from '../components/Table'
 
 export default class User extends React.Component {
   constructor(props) {
@@ -73,7 +73,11 @@ export default class User extends React.Component {
       {
         sortable: false,
         Header: 'status',
-        accessor: 'status'
+        width:50,
+        accessor: 'isHandicapped',
+        Cell:(row)=>{
+          return(row.value===1?<div className='icons'><FaWheelChair style={{'fill':'red'}} className='iconr'/></div>:<></>)
+        }
       },
       // {
       //   sortable: false,
@@ -212,30 +216,7 @@ export default class User extends React.Component {
     }
   }
 
-  filter(e, status) {
-    console.log(e)
-    let url = ''
-    let id = ''
-    e ?
-      e.map((list) => {
-        if (list.id === 'fullName') { id = 'name' }
-        else { id = list.id }
-        url = `${url}${id}=${list.value}&`
-        console.log(url)
-      })
-      :
-      console.log(null)
-    this.setState({ filterurl: url }, () => { this.getdata(status) })
-  }
-
-  Sort(e, status) {
-    console.log(e)
-    let id = ''
-    if (e[0].id === 'fullName') { id = 'name' }
-    else { id = e[0].id }
-    let url = `field=${id}&sort=${e[0].desc ? 'desc' : 'asc'}`
-    this.setState({ sorturl: url }, () => { this.getdata(status) })
-  }
+  
 
   togglemodal() {
     this.setState({ modal: !this.state.modal });
@@ -248,7 +229,12 @@ notify(){
     this.setState({notify:!this.state.notify})
   }
 }
-
+handelchange=(e,id,status)=>{
+  console.log('handelchange')
+  let obj = {};
+  obj[id] = e
+  this.setState(obj,()=>{this.getdata(status)})
+}
   setdata(e, id) {
     let obj = {};
     obj[id] = e
@@ -294,19 +280,14 @@ notify(){
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                <ReactTable
-                  manual
-                  onFilteredChange={(e) => this.filter(e, true)}
-                  onSortedChange={e => { this.Sort(e, true) }}
-                  pages={this.state.totalpage}
-                  page={this.state.page - 1}
-                  onPageSizeChange={(p) => {
-                    this.setState({ pagesize: p }, () => { this.getdata(false) })
-                  }}
-                  onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(true, '') }) }}
-                  className='-striped -highlight'
-                  data={this.state.data}
-                  columns={this.column}
+                <Table
+                column={this.column}
+                handelchange={this.handelchange}
+                data={this.state.data}
+                getdata={this.getdata}
+                status={true}
+                totalpage={this.state.totalpage}
+                page={this.state.page}
                 />
               </Col>
             </Row>
@@ -314,19 +295,14 @@ notify(){
           <TabPane tabId="2">
             <Row>
               <Col sm="12">
-                <ReactTable
-                  manual
-                  data={this.state.data}
-                  columns={this.column}
-                  onFilteredChange={(e) => this.filter(e, false)}
-                  onSortedChange={e => { this.Sort(e, false) }}
-                  pages={this.state.totalpage}
-                  page={this.state.page - 1}
-                  onPageSizeChange={(p) => {
-                    this.setState({ pagesize: p }, () => { this.getdata(false) })
-                  }}
-                  onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(false) }) }}
-                  className='-striped -highlight'
+              <Table
+                column={this.column}
+                handelchange={this.handelchange}
+                data={this.state.data}
+                getdata={this.getdata}
+                status={false}
+                totalpage={this.state.totalpage}
+                page={this.state.page}
                 />
               </Col>
             </Row>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
+import './Admin.css';
 import Sidenav from '../components/Sidenav';
 import { Collapse, NavbarToggler, Navbar, Row, Col ,DropdownItem,DropdownMenu,DropdownToggle,UncontrolledDropdown} from 'reactstrap';
 import User from './User';

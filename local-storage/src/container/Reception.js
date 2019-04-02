@@ -1,41 +1,54 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Label, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { TabContent, TabPane, Nav,Input, NavItem, NavLink, Row, Col, Label, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import classnames from 'classnames';
+import DateRangePicker from 'react-bootstrap-daterangepicker'
+import 'bootstrap-daterangepicker/daterangepicker.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import moment from 'moment';
 import ReactTable from "react-table";
 import Select from '../components/Select';
 import 'react-table/react-table.css';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
-import AsyncSelect from 'react-select'
-import Model from '../components/Model';
-import moment from 'moment'
-import { Link } from 'react-router-dom';
+import Table from '../components/Table'
 import IoMail from 'react-icons/lib/io/email';
 import FaCake from 'react-icons/lib/fa/birthday-cake'
 import IoAndroidPhonePortrait from 'react-icons/lib/io/android-phone-portrait';
 import Inputfield from '../components/Inputfield';
+import SignatureCanvas from 'react-signature-canvas'
 
 class Reception extends Component {
   constructor(props) {
     super(props)
     this.state = {
       activeTab: '1',
+      originals: '',
       data: [],
       image: '',
+      trimmedDataURL: '',
       pagesize: 20,
       totalpage: 0,
       page: 1,
       modal: false,
       name: '',
+      editmodel: false,
       filterurl: '',
       sorturl: '',
     }
-    this.addpacket=this.addpacket.bind(this)
+    this.addpacket = this.addpacket.bind(this)
     this.column = [
       {
         Header: 'Name',
-        accessor: 'fullName'
+        accessor: 'fullName',
+        filterable: true,
+        Cell: (row) => {
+          return (
+            <Button
+              onClick={() => { this.setState({ editmodel: true }) }}
+              color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
+          )
+        }
       },
       {
         Header: 'Profile picture',
@@ -48,24 +61,30 @@ class Reception extends Component {
       },
       {
         Header: 'Main unitId',
-        accessor: `family.families${''}units.0.isMainUnit`
+        accessor: 'family.families_units[0].unit.officialId',
+        filterable: true,
       },
       {
         Header: 'Building',
-
+        accessor:'family.families_units[0].unit.building.name',
+        filterable:true
       },
       {
         accessor: 'id',
         Cell: (row) => {
           return (
 
-            <Button className='recover' onClick={() => this.toggle(row.original)}>Receive</Button>
+            <Button className='recover packet' onClick={() => this.toggle(row.original)}
+              style={{ 'width': '80px', 'fontSize': '12px' }}
+            >
+              Receive</Button>
           )
         }
       },
       {
         Header: 'Telephone',
-        accessor: 'telephone'
+        accessor: 'telephone',
+        filterable: true,
       },
       {
         Header: 'Complete',
@@ -80,44 +99,136 @@ class Reception extends Component {
         }
       }
     ]
-    this.colum=[
-      {Header:'Number',
-      accessor:'tempIdNumber',
-      filterable: true,
+    this.colum = [
+      {
+        Header: 'Number',
+        accessor: 'tempIdNumber',
+        filterable: true,
+      },
+      {
+        Header: 'Status',
+        accessor: 'emailSent',
+        Cell: (row) => {
+          return (
+            <div className='icons'>
+              {row.value === false ? <IoMail style={{ 'fill': 'red' }} className='iconr' /> : <IoMail style={{ 'fill': 'green' }} className='iconr' />}
+              {row.original.smsSent === false ? <IoAndroidPhonePortrait style={{ 'fill': 'red' }} className='iconr' /> : <IoAndroidPhonePortrait style={{ 'fill': 'green' }} className='iconr' />}
+            </div>
+          )
+        },
+      },
+      {
+        Header: 'DateIn',
+        accessor: 'dateTimeReceived',
+        filterable: true,
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
+        }
+      },
+      {
+        Header: 'TimeIn',
+        accessor: 'dateTimeReceived',
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getHours()}:${date.getMinutes()}`
+            }</p>)
+        }
+      },
+      {
+        Header: 'Name',
+        accessor: 'user.fullName',
+        filterable: true,
+        Cell: (row) => {
+          return (
+            <Button
+              onClick={() => { this.setState({ editmodel: true }) }}
+              color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
+          )
+        }
+      },
+      {
+        accessor: 'id',
+        Cell: (row) => {
+          return (
+
+            <div className='packet'>  <Button className='recover' onClick={() => { this.setState({ recover: true, originals: row.original }) }}
+              style={{ 'width': '80px', 'fontSize': '12px' }}
+            >
+              Recover</Button>
+            </div>)
+        }
+      },
+    ]
+  this.col=[
+    {
+      Header:'Number',
+      accessor:'tempIdNumber'
     },
     {
-      Header:'Status',
-      accessor:'emailSent',
+      Header: 'DateIn',
+      accessor: 'dateTimeReceived',
       filterable: true,
-    },
-    {
-      Header:'DateIn',
-      accessor:'dateTimeReceived',
-      filterable: true,
-      Cell:(row)=>{
-        var date=new Date(row.value)
-        return(
-        <p>{
-          `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`}</p>)
+      Cell: (row) => {
+        var date = new Date(row.value)
+        return (
+          <p>{
+            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
       }
     },
     {
-      Header:'TimeIn',
-      accessor:'dateTimeReceived',
-      Cell:(row)=>{
-        var date=new Date(row.value)
-        return(
-        <p>{
-          `${date.getHours()}:${date.getMinutes()}`
+      Header: 'TimeIn',
+      accessor: 'dateTimeReceived',
+      Cell: (row) => {
+        var date = new Date(row.value)
+        return (
+          <p>{
+            `${date.getHours()}:${date.getMinutes()}`
           }</p>)
       }
     },
     {
-      Header:'Name',
-      accessor:'user.fullName',
+      Header: 'Date Out',
+      accessor: 'dateTimeRecovered',
       filterable: true,
+      Cell: (row) => {
+        var date = new Date(row.value)
+        return (
+          <p>{
+            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
+      }
     },
-    ]
+    {
+      Header: 'Time Out',
+      accessor: 'dateTimeRecovered',
+      Cell: (row) => {
+        var date = new Date(row.value)
+        return (
+          <p>{
+            `${date.getHours()}:${date.getMinutes()}`
+          }</p>)
+      }
+    },
+   { Header: 'Name',
+    accessor: 'user.fullName',
+    filterable: true,
+    Cell: (row) => {
+      return (
+        <Button
+          onClick={() => { this.setState({ editmodel: true }) }}
+          color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
+      )
+    }
+  },
+  {
+    Header:'Main Unit Id',
+    accessor:'user.family.families_units[0].unit.officialId'
+  }
+  ]
   }
 
   componentWillMount() {
@@ -159,34 +270,32 @@ class Reception extends Component {
       .catch((e) => {
         console.log(e)
       })
+    this.getdata(true)
 
-    Axios.get(`http://localhost:8080/api/reception/reception-users-list?page=1&limit=20&status=1`,
+  }
+
+  handelchange = (e, id, status) => {
+    console.log('handelchange')
+    let obj = {};
+    obj[id] = e
+    this.setState(obj, () => { this.getdata(status) })
+  }
+
+  getdata = (status) => {
+    let token = localStorage.getItem('token');
+    Axios.get(`http://localhost:8080/api/reception/reception-users-list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`,
       { headers: { 'token': token } })
       .then((response) => {
         console.log(response)
-        this.setState({ data: response.data.data, totalpage: Math.ceil(response.data.totalRecords / this.state.pagesize) })
+        this.setState({ data: response.data.data, image: response.data.imagePath, totalpage: Math.ceil(response.data.totalRecords / this.state.pagesize) })
       })
       .catch((e) => {
         console.log(e)
       })
   }
 
-  addpacket ()  {
-    // let body=new FormData();
-    // body.set('recipientId',this.state.original.id)
-    // body.set('recipientFamilyId', this.state.original.familyId)
-    // body.set('dateTimeReceived', new Date())
-    // body.set('receivedById', '19f0c1f2-98c7-46ad-87d0-4e6a73128500')
-    // body.set('numberOfItems', 1)
-    // body.set('tempIdNumber', this.state.last)
-    // body.set('telephone', this.state.original.telephone)
-    // body.set('email', this.state.original.email)
-    // body.set('currentHost', 'http://localhost:8080')
-    // body.set('fullName', this.state.original.fullName)
-    // body.set('emailPref', null)
-    // body.set('smsPref', null)
-    // body.set('langpref', null)
-    let FormData={
+  addpacket() {
+    let FormData = {
       recipientId: this.state.original.id,
       recipientFamilyId: this.state.original.familyId,
       dateTimeReceived: new Date(),
@@ -204,33 +313,64 @@ class Reception extends Component {
     console.log(FormData)
     let token = localStorage.getItem('token');
     Axios.post(`http://localhost:8080/api/reception/add-packet`,
-  (FormData),
+      (FormData),
       { headers: { 'token': token } })
-      .then((res)=>console.log('response:',res))
-      .catch((res)=>console.log(res))
+      .then((res) => this.setState({modal:false}))
+      .catch((res) => console.log(res))
   }
 
-getlist(){
+recoverPacket(){
+  let FormData={
+    dateTimeRecovered:new Date(),
+    id:this.state.originals.id,
+    noteAfterRecovery:'',
+    receivedById:'19f0c1f2-98c7-46ad-87d0-4e6a73128500',
+    recoveredBySign:this.state.trimmedDataURL
+  }
+  let token = localStorage.getItem('token');
+    Axios.post(`http://localhost:8080/api/reception/update-recovered-date`,
+      (FormData),
+      { headers: { 'token': token } })
+      .then((res) => this.setState({recover:false}))
+      .catch((res) => console.log(res))
+}
+
+getpacket(){
   let token = localStorage.getItem('token');
   Axios.get(`http://localhost:8080/api/reception/packets-List?page=1&limit=20&dateTimeRecovered=false`, { headers: { 'token': token } })
-.then((response)=>{
-  this.setState({packets:response.data.data},()=>{console.log(this.state.packets)})
-})
+    .then((response) => {
+      this.setState({ outpackets: response.data.data }, () => { console.log(this.state.packets) })
+    })
 }
-  toggle(original) {
 
+  getlist() {
+    let token = localStorage.getItem('token');
+    Axios.get(`http://localhost:8080/api/reception/packets-List?page=1&limit=20&dateTimeRecovered=false`, { headers: { 'token': token } })
+      .then((response) => {
+        this.setState({ packets: response.data.data }, () => { console.log(this.state.packets) })
+      })
+  }
+
+  toggle(original) {
     this.setState({ modal: !this.state.modal, original: original })
   }
 
+  setdata(e, id) {
+    let obj = {};
+    obj[id] = e
+    this.setState(obj)
+  }
+
   render() {
+    let { tempIdNumber, packet_type, numberOfItems } = this.state.originals
     return (
       <div className='table-sc'>
-       <h3 className='header'>Reception</h3>
+        <h3 className='header'>Reception</h3>
         <Nav tabs>
           <NavItem>
             <NavLink
               className={classnames({ active: this.state.activeTab === '1' })}
-              onClick={() => { this.setState({activeTab:'1'}); }}
+              onClick={() => { this.setState({ activeTab: '1' }); }}
             >
               Residents
                 </NavLink>
@@ -238,9 +378,17 @@ getlist(){
           <NavItem>
             <NavLink
               className={classnames({ active: this.state.activeTab === '2' })}
-              onClick={() => { this.setState({activeTab:'2'},()=>{this.getlist()}); }}
+              onClick={() => { this.setState({ activeTab: '2' }, () => { this.getlist() }); }}
             >
               Packets in
+                </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: this.state.activeTab === '3' })}
+              onClick={() => { this.setState({ activeTab: '3' }, () => { this.getpacket() }); }}
+            >
+              Packets out
                 </NavLink>
           </NavItem>
         </Nav>
@@ -252,7 +400,7 @@ getlist(){
           <Modal style={{ 'minHeight': '500px' }} isOpen={this.state.modal} toggle={() => this.toggle()} backdrop={true} >
 
             <ModalHeader style={{ 'minHeight': '60px' }} toggle={() => this.toggle()}>Reception & Notification
-</ModalHeader>
+          </ModalHeader>
             <ModalBody>
               <div className='recepmodel  col-sm-10' >
                 <Label className='packet'>Please write this number on the packet or print a label</Label>
@@ -266,31 +414,90 @@ getlist(){
                 <Label className='packet'>Take a picture of the packet, if useful</Label>
                 <div className='packet-button'> <Button className="col-sm-7" style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291' }}
                   onClick={() => { }}> Click to take a picture</Button>
-                <br></br>  <Button className="col-sm-7" style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291' }}
+                  <br></br>  <Button className="col-sm-7" style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291' }}
                     onClick={() => { }}>Print a label</Button>
-                <br></br>  <Button className="col-sm-7" style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43' }} onClick={() => { this.addpacket() }}>Send notification</Button>
+                  <br></br>  <Button className="col-sm-7" style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43' }} onClick={() => { this.addpacket() }}>Send notification</Button>
                 </div></div>
             </ModalBody>
+          </Modal>
+          <Modal style={{ 'minHeight': '500px' }} isOpen={this.state.recover} toggle={() => this.setState({ recover: false })} backdrop={true} >
 
+            <ModalHeader style={{ 'minHeight': '60px' }} toggle={() => this.setState({ recover: false })}>Packet recovery
+          </ModalHeader>
+            <ModalBody>
+              <div className='recepmodel  col-sm-10' >
+                <Label className='packet'>Packet number</Label>
+                <h1>{tempIdNumber}</h1>
+                <Label className='packet'>Packet type</Label>
+                <Label className='packet'>{packet_type ? packet_type.name : ''}</Label>
+                <br></br>
+                <Label className='packet'>Number of packets</Label>
+                <Label className='packet'>{numberOfItems}</Label>
+                <br></br>
+                <Label className='packet'>recipient</Label>
+                <Label className='packet'>Signture</Label>
+                <SignatureCanvas penColor='green'
+                  canvasProps={{ height: 200, className: 'sigCanvas col-sm-12' }}
+                  onEnd={(e) => {
+                    this.setState({
+                      trimmedDataURL: this.sigCanvas.getTrimmedCanvas()
+                        .toDataURL('image/png')
+                    })
+                  }}
+
+                  ref={(ref) => { this.sigCanvas = ref }} />
+                <div className='packet'><Button className='clear' onClick={() => { this.sigCanvas.clear() }}>clear</Button></div>
+                <Label className='packet'>Note after recovery</Label>
+                <Inputfield></Inputfield>
+                <div className='packet'><Button className='recover col-sm-7' onClick={()=>this.recoverPacket()}>Packet Recovered</Button></div>
+              </div>
+            </ModalBody>
+          </Modal>
+          <Modal style={{ 'minHeight': '500px' }} className='model' isOpen={this.state.editmodel} toggle={()=>{this.setState({editmodel:false})}} backdrop={true} >
+
+            <ModalHeader style={{ 'minHeight': '60px' }} toggle={()=>{this.setState({editmodel:false})}}>Add User</ModalHeader>
+            <ModalBody>
+
+            <Inputfield type='number' placeholder='Mobile number'
+              exp={/^$|^[6-9]\d{9}$/}
+              onChange={(e,id)=>this.setdata(e,id)}
+            />
+            <br></br>
+            <Inputfield type='email' placeholder='Email address'
+             onChange={(e,id)=>this.setdata(e,id)}
+              exp={/^$|^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/}
+            />
+            
+            <br></br>
+            <Label><b>Select date of birth</b></Label>
+            <br></br>
+            <DateRangePicker
+              singleDatePicker
+              drops='up'
+              onApply={(e,p)=>{this.setdata( moment(p.startDate).format('L'),"DOB")}}
+            >
+              <Input name='DOB' />
+            </DateRangePicker>
+            </ModalBody>
+            <ModalFooter>
+              <Button style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291' }}
+                onClick={() => this.adduser()}>Submit</Button>
+              <Button style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43' }} onClick={this.props.toggle}>Cancel</Button>
+            </ModalFooter>
 
 
           </Modal>
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                <ReactTable
-                  manual
-                  onFilteredChange={(e) => this.filter(e, true)}
-                  onSortedChange={e => { this.Sort(e, true) }}
-                  pages={this.state.totalpage}
-                  page={this.state.page - 1}
-                  //   onPageSizeChange={(p) => {
-                  //     this.setState({ pagesize: p }, () => { this.getdata(false) })
-                  //   }}
-                  // onPageChange={(index) => { this.setState({ page: index + 1 }, () => { this.getdata(true, '') }) }}
-                  className='-striped -highlight'
+                <Table
+                  column={this.column}
+                  handelchange={this.handelchange}
                   data={this.state.data}
-                  columns={this.column}
+                  getdata={this.getdata}
+                  status={true}
+                  totalpage={this.state.totalpage}
+                  page={this.state.page}
                 />
               </Col>
             </Row>
@@ -299,12 +506,27 @@ getlist(){
             <Row>
               <Col sm="12">
                 <ReactTable
-                  
+
                   data={this.state.packets}
                   columns={this.colum}
-                  
-                 
-                 showPagination={false}
+
+
+                  showPagination={false}
+                  className='-striped -highlight'
+                />
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tabId="3">
+            <Row>
+              <Col sm="12">
+                <ReactTable
+
+                  data={this.state.outpackets}
+                  columns={this.col}
+
+
+                  showPagination={false}
                   className='-striped -highlight'
                 />
               </Col>

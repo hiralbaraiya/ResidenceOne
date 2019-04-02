@@ -2,3 +2,59 @@
     height:100vmax;
     background-color:rgba(31, 51, 66, 0.959)
 }
+.main{
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    display: block;
+}
+.sidenav{
+    position:fixed;
+    background: #495b6c;
+    display:block;
+    float:left;
+    width:194px;
+    z-index: 1005;
+    overflow: scroll;
+    height:100%;
+}
+.topbar{
+    background: #fff;
+    border-bottom:1px solid rgba(0, 0, 0, 0.1);
+    color:#323332;
+    min-height:60px;
+    position:fixed;
+    z-index:1000;
+    padding-right:10px;
+   width: 100%;
+}
+#navbar{
+    padding:0px;
+  }
+  .image{
+    width:40px;
+    height:40px;
+    border-radius: 25px;
+  }
+  .tablemain{
+    margin:0px;
+    padding-left:0px;
+}
+.tabcomp{
+    min-height: 200px;
+    position:relative;
+    padding-top:45px;
+    padding-right:15px;
+   
+}
+
+.dash{
+    min-height: 300px;
+    border-radius:2px;
+    position: relative;
+    background: #fff;
+    margin-bottom:20px;
+    margin-top:15px;
+
+}
