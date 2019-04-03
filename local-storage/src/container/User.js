@@ -1,21 +1,22 @@
 import React from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button,Input } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button, Input } from 'reactstrap';
 import classnames from 'classnames';
 import FaWheelChair from 'react-icons/lib/fa/wheelchair'
-import Axios from 'axios';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
 import Model from '../components/Model';
 import { Link } from 'react-router-dom';
 import Notification from '../components/Notification'
-import Table from '../components/Table'
+import Table from '../components/Table';
+import { getUserList } from '../Api/ResidenceApi';
+import { updateUser } from '../Api/ResidenceApi'
 
 export default class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selected: {},
-       selectAll: 0,
+      selectAll: 0,
       activeTab: '1',
       data: [],
       image: '',
@@ -25,7 +26,7 @@ export default class User extends React.Component {
       name: '',
       filterurl: '',
       sorturl: '',
-      notify:false,
+      notify: false,
       modal: false
     };
 
@@ -33,7 +34,7 @@ export default class User extends React.Component {
 
     this.column = [
       {
-        sortable:false,
+        sortable: false,
         Header: () => {
           return (<input type='checkbox'
             checked={this.state.selectAll === 1}
@@ -45,7 +46,7 @@ export default class User extends React.Component {
             onChange={() => this.toggleSelectAll()}
           />)
         },
-        Cell: ({original}) => {
+        Cell: ({ original }) => {
           return (<input type='checkbox'
             checked={this.state.selected[original.firstName] === true}
             onChange={() => this.toggleRow(original.firstName)}
@@ -73,10 +74,10 @@ export default class User extends React.Component {
       {
         sortable: false,
         Header: 'status',
-        width:50,
+        width: 50,
         accessor: 'isHandicapped',
-        Cell:(row)=>{
-          return(row.value===1?<div className='icons'><FaWheelChair style={{'fill':'red'}} className='iconr'/></div>:<></>)
+        Cell: (row) => {
+          return (row.value === 1 ? <div className='icons'><FaWheelChair style={{ 'fill': 'red' }} className='iconr' /></div> : <></>)
         }
       },
       // {
@@ -126,8 +127,8 @@ export default class User extends React.Component {
               icon={<Faellips />}
               list={[<Button color='link' onClick={() => this.markhandicap(row.value, row.original.isHandicapped, row.index)}>{row.original.isHandicapped === 1 ? <p>Mark as Not Handicapped</p> : <p>mark as Handicapped</p>}</Button>,
               <Button color='link' onClick={() => this.edit(row.value, row.original.status, row.index)}>{row.original.status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
-             ,row.original.family===null?'':<Button color='link'>go to family</Button>
-            ]} />
+                , row.original.family === null ? '' : <Button color='link'>go to family</Button>
+              ]} />
           )
         }
       }
@@ -135,72 +136,58 @@ export default class User extends React.Component {
   }
 
   toggleRow(firstName) {
-		const newSelected = {...this.state.selected};
-		newSelected[firstName] = !this.state.selected[firstName];
-		this.setState({
-			selected: newSelected,
-			selectAll: 2
-		});
-	}
+    const newSelected = { ...this.state.selected };
+    newSelected[firstName] = !this.state.selected[firstName];
+    this.setState({
+      selected: newSelected,
+      selectAll: 2
+    });
+  }
 
-	toggleSelectAll() {
-		let newSelected = {};
+  toggleSelectAll() {
+    let newSelected = {};
 
-		if (this.state.selectAll === 0) {
-			this.state.data.forEach(x => {
-				newSelected[x.firstName] = true;
-			});
-		}
+    if (this.state.selectAll === 0) {
+      this.state.data.forEach(x => {
+        newSelected[x.firstName] = true;
+      });
+    }
 
-		this.setState({
-			selected: newSelected,
-			selectAll: this.state.selectAll === 0 ? 1 : 0
-		});
-	}
+    this.setState({
+      selected: newSelected,
+      selectAll: this.state.selectAll === 0 ? 1 : 0
+    });
+  }
 
   edit(id, status, index) {
     console.log(status)
     if (window.confirm("Are you sure you want to change user status from active to inactive?")) {
-      let token = localStorage.getItem('token');
-      Axios.get(`http://localhost:8080/api/user/updateStatus/${id}/${status==='1'?0:1}`, { headers: { 'token': token } })
-        .then((response) => {
-          console.log(response)
-          this.getdata(status==='1'?true:false)
-        })
-        .catch((e) => {
-          console.log(e)
+      getUserList(`updateStatus/${id}/${status === '1' ? 0 : 1}`)
+        .then((result) => {
+          (!result.error) ?
+          this.getdata(status === '1' ? true : false):
+          this.setState({ apierror: true })
         })
     }
   }
-  markhandicap(id, status, index) {
-    console.log('adduser')
-    if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
-      let token = localStorage.getItem('token');
-      Axios.post(`http://localhost:8080/api/user//updateisHandicapped/${status === 1 ? 0 : 1}`,
-        { 'userId': id }, { headers: { 'token': token } })
 
+
+  markhandicap(id, status, index) {
+    if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
+      updateUser(`updateisHandicapped/${status === 1 ? 0 : 1}`, { 'userId': id })
         .then((response) => {
-          console.log(response)
-          let obj = { ...this.state.data }
-          obj[index].isHandicapped = status === 1 ? 0 : 1
-          this.setState({ obj })
-        })
-        .catch((e) => {
-          console.log(e)
+
         })
     }
   }
 
   getdata = (status) => {
-    let token = localStorage.getItem('token');
-    Axios.get(`http://localhost:8080/api/user/list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`,
-      { headers: { 'token': token } })
-      .then((response) => {
-        console.log(response)
-        this.setState({ data: response.data.data, image: response.data.imagePath, totalpage: Math.ceil(response.data.totalRecords / this.state.pagesize) })
-      })
-      .catch((e) => {
-        console.log(e)
+    let url = `list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`
+    getUserList(url)
+      .then((result) => {
+        (!result.error) ?
+          this.setState({ data: result.response.data.data, image: result.response.data.imagePath, totalpage: Math.ceil(result.response.data.totalRecords / this.state.pagesize) })
+          : this.setState({ apierror: true })
       })
   }
 
@@ -216,25 +203,25 @@ export default class User extends React.Component {
     }
   }
 
-  
+
 
   togglemodal() {
     this.setState({ modal: !this.state.modal });
   }
-notify(){
-  if(this.state.selectAll===0){
-    alert('select atleast one')
+  notify() {
+    if (this.state.selectAll === 0) {
+      alert('select atleast one')
+    }
+    else {
+      this.setState({ notify: !this.state.notify })
+    }
   }
-  else{
-    this.setState({notify:!this.state.notify})
+  handelchange = (e, id, status) => {
+    console.log('handelchange')
+    let obj = {};
+    obj[id] = e
+    this.setState(obj, () => { this.getdata(status) })
   }
-}
-handelchange=(e,id,status)=>{
-  console.log('handelchange')
-  let obj = {};
-  obj[id] = e
-  this.setState(obj,()=>{this.getdata(status)})
-}
   setdata(e, id) {
     let obj = {};
     obj[id] = e
@@ -245,7 +232,7 @@ handelchange=(e,id,status)=>{
     console.log('prop:', this.props)
     return (
       <div className='table-sc'>
-       <h3 className='header'>Users</h3>
+        <h3 className='header'>Users</h3>
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -276,18 +263,18 @@ handelchange=(e,id,status)=>{
           <Model modal={this.state.modal} toggle={() => { this.togglemodal() }}
             setdata={(e, id) => { this.setdata(e, id) }}
           />
-          <Notification isOpen={this.state.notify} toggle={()=>{this.notify()}}/>
+          <Notification isOpen={this.state.notify} toggle={() => { this.notify() }} />
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
                 <Table
-                column={this.column}
-                handelchange={this.handelchange}
-                data={this.state.data}
-                getdata={this.getdata}
-                status={true}
-                totalpage={this.state.totalpage}
-                page={this.state.page}
+                  column={this.column}
+                  handelchange={this.handelchange}
+                  data={this.state.data}
+                  getdata={this.getdata}
+                  status={true}
+                  totalpage={this.state.totalpage}
+                  page={this.state.page}
                 />
               </Col>
             </Row>
@@ -295,14 +282,14 @@ handelchange=(e,id,status)=>{
           <TabPane tabId="2">
             <Row>
               <Col sm="12">
-              <Table
-                column={this.column}
-                handelchange={this.handelchange}
-                data={this.state.data}
-                getdata={this.getdata}
-                status={false}
-                totalpage={this.state.totalpage}
-                page={this.state.page}
+                <Table
+                  column={this.column}
+                  handelchange={this.handelchange}
+                  data={this.state.data}
+                  getdata={this.getdata}
+                  status={false}
+                  totalpage={this.state.totalpage}
+                  page={this.state.page}
                 />
               </Col>
             </Row>

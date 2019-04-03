@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+//import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {Router,Route,Switch} from 'react-router-dom'
+import history from './History'
 import Login from './container/Login';
 import Home from './container/Home';
 import Admin from './container/Admin';
@@ -9,7 +11,7 @@ class App extends Component {
 
   render() {
     return (
-      <Router>
+      <Router history={history}>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />

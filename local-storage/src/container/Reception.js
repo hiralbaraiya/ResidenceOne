@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
-import { TabContent, TabPane, Nav,Input, NavItem, NavLink, Row, Col, Label, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { TabContent, TabPane, Nav, Input, NavItem, NavLink, Row, Col, Label, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import classnames from 'classnames';
 import DateRangePicker from 'react-bootstrap-daterangepicker'
 import 'bootstrap-daterangepicker/daterangepicker.css';
@@ -17,6 +17,7 @@ import FaCake from 'react-icons/lib/fa/birthday-cake'
 import IoAndroidPhonePortrait from 'react-icons/lib/io/android-phone-portrait';
 import Inputfield from '../components/Inputfield';
 import SignatureCanvas from 'react-signature-canvas'
+import { getResidentList, updateReception } from '../Api/ResidenceApi';
 
 class Reception extends Component {
   constructor(props) {
@@ -24,6 +25,9 @@ class Reception extends Component {
     this.state = {
       activeTab: '1',
       originals: '',
+      email: '',
+      telephone: '',
+      DOB: '',
       data: [],
       image: '',
       trimmedDataURL: '',
@@ -66,8 +70,8 @@ class Reception extends Component {
       },
       {
         Header: 'Building',
-        accessor:'family.families_units[0].unit.building.name',
-        filterable:true
+        accessor: 'family.families_units[0].unit.building.name',
+        filterable: true
       },
       {
         accessor: 'id',
@@ -147,7 +151,7 @@ class Reception extends Component {
           return (
             <Button
               onClick={() => { this.setState({ editmodel: true }) }}
-              color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
+              color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '1px' }}>{row.value}</Button>
           )
         }
       },
@@ -164,114 +168,123 @@ class Reception extends Component {
         }
       },
     ]
-  this.col=[
-    {
-      Header:'Number',
-      accessor:'tempIdNumber'
-    },
-    {
-      Header: 'DateIn',
-      accessor: 'dateTimeReceived',
-      filterable: true,
-      Cell: (row) => {
-        var date = new Date(row.value)
-        return (
-          <p>{
-            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
+    this.col = [
+      {
+        Header: 'Number',
+        accessor: 'tempIdNumber'
+      },
+      {
+        Header: 'DateIn',
+        accessor: 'dateTimeReceived',
+        filterable: true,
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
+        }
+      },
+      {
+        Header: 'TimeIn',
+        accessor: 'dateTimeReceived',
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getHours()}:${date.getMinutes()}`
+            }</p>)
+        }
+      },
+      {
+        Header: 'Date Out',
+        accessor: 'dateTimeRecovered',
+        filterable: true,
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
+        }
+      },
+      {
+        Header: 'Time Out',
+        accessor: 'dateTimeRecovered',
+        Cell: (row) => {
+          var date = new Date(row.value)
+          return (
+            <p>{
+              `${date.getHours()}:${date.getMinutes()}`
+            }</p>)
+        }
+      },
+      {
+        Header: 'Name',
+        accessor: 'user.fullName',
+        filterable: true,
+        Cell: (row) => {
+          return (
+            <Button
+              onClick={() => { this.setState({ editmodel: true, id: row.original.id }) }}
+              color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
+          )
+        }
+      },
+      {
+        Header: 'Main Unit Id',
+        accessor: 'user.family.families_units[0].unit.officialId'
       }
-    },
-    {
-      Header: 'TimeIn',
-      accessor: 'dateTimeReceived',
-      Cell: (row) => {
-        var date = new Date(row.value)
-        return (
-          <p>{
-            `${date.getHours()}:${date.getMinutes()}`
-          }</p>)
-      }
-    },
-    {
-      Header: 'Date Out',
-      accessor: 'dateTimeRecovered',
-      filterable: true,
-      Cell: (row) => {
-        var date = new Date(row.value)
-        return (
-          <p>{
-            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</p>)
-      }
-    },
-    {
-      Header: 'Time Out',
-      accessor: 'dateTimeRecovered',
-      Cell: (row) => {
-        var date = new Date(row.value)
-        return (
-          <p>{
-            `${date.getHours()}:${date.getMinutes()}`
-          }</p>)
-      }
-    },
-   { Header: 'Name',
-    accessor: 'user.fullName',
-    filterable: true,
-    Cell: (row) => {
-      return (
-        <Button
-          onClick={() => { this.setState({ editmodel: true }) }}
-          color='link' style={{ 'width': '80px', 'height': '20px', 'fontSize': '12px' }}>{row.value}</Button>
-      )
-    }
-  },
-  {
-    Header:'Main Unit Id',
-    accessor:'user.family.families_units[0].unit.officialId'
-  }
-  ]
+    ]
   }
 
   componentWillMount() {
-    let token = localStorage.getItem('token');
-    Axios.get(`http://localhost:8080/api/reception/lastpacket-in`, { headers: { 'token': token } })
 
-      .then((response) => {
-        console.log(response, "last")
+    getResidentList(`lastpacket-in`)
+      .then((result) => {
+        if(!result.error){
         let date = new Date();
-        console.log(date)
         let y = date.getFullYear();
         let m = `${date.getMonth() + 1}`.padStart(2, '0')
         let d = `${date.getDate()}`.padStart(2, '0')
         let last = 'P' + y + m + d + '-'
         let num
-        if (response.data.data.maxTempIdNumber === null) {
-          console.log('number null')
+        if (result.response.data.data.maxTempIdNumber === null) {
           num = '0001'
         }
         else {
-          num = parseInt(response.data.data.maxTempIdNumber.slice(10))
+          num = parseInt(result.response.data.data.maxTempIdNumber.slice(10))
           if (num === 9999) {
-            console.log('number 9999')
             num = '0001'
           }
           else {
-            console.log('last case')
-            console.log(num)
             num = num + 1 + ''
             num = num.padStart(4, '0')
-            console.log(num)
           }
-
         }
         last = last + num
-        console.log(last, ':last')
         this.setState({ last: last })
+      }
+      else{
+        this.setState({apiError:true})
+      }
+    })
+     
+    this.getdata(true)
+  }
+
+  adduser() {
+    let token = localStorage.getItem('token');
+    Axios.post(
+      `http://localhost:8080/api/pool/editPoolUserDetail/${this.state.id}`,
+      ({ emailData: this.state.email, telephoneData: this.state.telephone, dateOfBirthData: this.state.DOB }),
+      { headers: { 'token': token } }
+    )
+      .then((res) => {
+        console.log(res)
+        this.setState({ editmodel: false })
       })
       .catch((e) => {
         console.log(e)
       })
-    this.getdata(true)
-
   }
 
   handelchange = (e, id, status) => {
@@ -282,15 +295,11 @@ class Reception extends Component {
   }
 
   getdata = (status) => {
-    let token = localStorage.getItem('token');
-    Axios.get(`http://localhost:8080/api/reception/reception-users-list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`,
-      { headers: { 'token': token } })
-      .then((response) => {
-        console.log(response)
-        this.setState({ data: response.data.data, image: response.data.imagePath, totalpage: Math.ceil(response.data.totalRecords / this.state.pagesize) })
-      })
-      .catch((e) => {
-        console.log(e)
+    getResidentList(`reception-users-list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`)
+      .then((result) => {
+        (!result.error) ?
+          this.setState({ data: result.response.data.data, image: result.response.data.imagePath, totalpage: Math.ceil(result.response.data.totalRecords / this.state.pagesize) })
+          : this.setState({ apiError: true })
       })
   }
 
@@ -310,44 +319,38 @@ class Reception extends Component {
       smsPref: null,
       langpref: null
     }
-    console.log(FormData)
-    let token = localStorage.getItem('token');
-    Axios.post(`http://localhost:8080/api/reception/add-packet`,
-      (FormData),
-      { headers: { 'token': token } })
-      .then((res) => this.setState({modal:false}))
-      .catch((res) => console.log(res))
+    updateReception(`add-packet`, FormData)
+      .then((res) => this.setState({ modal: false }))
+
   }
 
-recoverPacket(){
-  let FormData={
-    dateTimeRecovered:new Date(),
-    id:this.state.originals.id,
-    noteAfterRecovery:'',
-    receivedById:'19f0c1f2-98c7-46ad-87d0-4e6a73128500',
-    recoveredBySign:this.state.trimmedDataURL
+  recoverPacket() {
+    let FormData = {
+      dateTimeRecovered: new Date(),
+      id: this.state.originals.id,
+      noteAfterRecovery: '',
+      receivedById: '19f0c1f2-98c7-46ad-87d0-4e6a73128500',
+      recoveredBySign: this.state.trimmedDataURL
+    }
+    updateReception(`update-recovered-date`, FormData)
+      .then((res) => this.setState({ recover: false }))
   }
-  let token = localStorage.getItem('token');
-    Axios.post(`http://localhost:8080/api/reception/update-recovered-date`,
-      (FormData),
-      { headers: { 'token': token } })
-      .then((res) => this.setState({recover:false}))
-      .catch((res) => console.log(res))
-}
 
-getpacket(){
-  let token = localStorage.getItem('token');
-  Axios.get(`http://localhost:8080/api/reception/packets-List?page=1&limit=20&dateTimeRecovered=false`, { headers: { 'token': token } })
-    .then((response) => {
-      this.setState({ outpackets: response.data.data }, () => { console.log(this.state.packets) })
-    })
-}
+  getpacket() {
+    getResidentList(`packets-List?page=1&limit=20&dateTimeRecovered=true`)
+      .then((result) => {
+        (!result.error) ?
+        this.setState({ outpackets: result.response.data.data })
+        :this.setState({apiError:true})
+      })
+  }
 
   getlist() {
-    let token = localStorage.getItem('token');
-    Axios.get(`http://localhost:8080/api/reception/packets-List?page=1&limit=20&dateTimeRecovered=false`, { headers: { 'token': token } })
-      .then((response) => {
-        this.setState({ packets: response.data.data }, () => { console.log(this.state.packets) })
+    getResidentList(`packets-List?page=1&limit=20&dateTimeRecovered=false`)
+      .then((result) => {
+        (!result.error) ?
+        this.setState({ packets: result.response.data.data })
+        :this.setState({apiError:true})
       })
   }
 
@@ -449,43 +452,41 @@ getpacket(){
                 <div className='packet'><Button className='clear' onClick={() => { this.sigCanvas.clear() }}>clear</Button></div>
                 <Label className='packet'>Note after recovery</Label>
                 <Inputfield></Inputfield>
-                <div className='packet'><Button className='recover col-sm-7' onClick={()=>this.recoverPacket()}>Packet Recovered</Button></div>
+                <div className='packet'><Button className='recover col-sm-7' onClick={() => this.recoverPacket()}>Packet Recovered</Button></div>
               </div>
             </ModalBody>
           </Modal>
-          <Modal style={{ 'minHeight': '500px' }} className='model' isOpen={this.state.editmodel} toggle={()=>{this.setState({editmodel:false})}} backdrop={true} >
+          <Modal style={{ 'minHeight': '500px' }} className='model' isOpen={this.state.editmodel} toggle={() => { this.setState({ editmodel: false }) }} backdrop={true} >
 
-            <ModalHeader style={{ 'minHeight': '60px' }} toggle={()=>{this.setState({editmodel:false})}}>Add User</ModalHeader>
+            <ModalHeader style={{ 'minHeight': '60px' }} toggle={() => { this.setState({ editmodel: false }) }}>Add User</ModalHeader>
             <ModalBody>
 
-            <Inputfield type='number' placeholder='Mobile number'
-              exp={/^$|^[6-9]\d{9}$/}
-              onChange={(e,id)=>this.setdata(e,id)}
-            />
-            <br></br>
-            <Inputfield type='email' placeholder='Email address'
-             onChange={(e,id)=>this.setdata(e,id)}
-              exp={/^$|^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/}
-            />
-            
-            <br></br>
-            <Label><b>Select date of birth</b></Label>
-            <br></br>
-            <DateRangePicker
-              singleDatePicker
-              drops='up'
-              onApply={(e,p)=>{this.setdata( moment(p.startDate).format('L'),"DOB")}}
-            >
-              <Input name='DOB' />
-            </DateRangePicker>
+              <Inputfield type='number' placeholder='Mobile number'
+                exp={/^$|^[6-9]\d{9}$/}
+                onChange={(e, id) => this.setdata(e, id)}
+              />
+              <br></br>
+              <Inputfield type='email' placeholder='Email address'
+                onChange={(e, id) => this.setdata(e, id)}
+                exp={/^$|^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/}
+              />
+
+              <br></br>
+              <Label><b>Select date of birth</b></Label>
+              <br></br>
+              <DateRangePicker
+                singleDatePicker
+                drops='up'
+                onApply={(e, p) => { this.setdata(moment(p.startDate).format('L'), "DOB") }}
+              >
+                <Input value={this.state.DOB} name='DOB' />
+              </DateRangePicker>
             </ModalBody>
             <ModalFooter>
               <Button style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291' }}
                 onClick={() => this.adduser()}>Submit</Button>
-              <Button style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43' }} onClick={this.props.toggle}>Cancel</Button>
+              <Button style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43' }} >Cancel</Button>
             </ModalFooter>
-
-
           </Modal>
           <TabPane tabId="1">
             <Row>

@@ -4,7 +4,8 @@ import { Label, TabContent, TabPane, Nav, NavItem, NavLink, Button } from 'react
 import classnames from 'classnames';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
-import Edit from '../components/Edit'
+import Edit from '../components/Edit';
+import {getUserList} from '../Api/ResidenceApi'
 
 class Profile extends Component {
   constructor(props) {
@@ -23,23 +24,18 @@ class Profile extends Component {
   }
 
   componentWillMount() {
-    let token = localStorage.getItem('token');
-    Axios.get(`http://localhost:8080/api/user/detail/${this.props.match.params.id}`,
-      { headers: { 'token': token } })
-      .then((response) => {
-        console.log(response.data)
-        if (response.data.status) {
-          this.setState({ data: response.data.data })
+   
+      getUserList(`detail/${this.props.match.params.id}`)
+      .then((result) => {
+        if (result.response.data.status) {
+          this.setState({ data: result.response.data.data })
         }
         else {
           this.props.history.push('/admin/users')
         }
       })
-      .catch((e) => {
-        this.props.history.push('/admin/users')
-      })
-
   }
+
   Toggle(data) {
     let result = {}
     result[data] = !this.state[data]
