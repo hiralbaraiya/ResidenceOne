@@ -20,15 +20,18 @@ class Edit extends Component{
         }
       }
 
+     
 
    render(){
        return(
            <div style={{'overflow':'scroll','height':'350px'}}>
                <Inputfield type='text' placeholder='First Name' exp={/^(?=.*[\w\d]).+$/}
+               value={this.props.state['First Name']}
             onChange={(e, id) => { this.props.setdata(e, id) }}
           />
           <br></br>
           <Inputfield type='text' placeholder='Last Name' exp={/^(?=.*[\w\d]).+$/}
+          value={this.props.state['Last Name']}
             onChange={(e, id) => { this.props.setdata(e, id) }}
           />
           <Dropdown caret onClick={() => this.props.toggle('opendata')}>
@@ -37,15 +40,18 @@ class Edit extends Component{
           <Collapse isOpen={this.props.state.opendata}>
             <Inputfield type='number' placeholder='Mobile number'
               exp={/^$|^[6-9]\d{9}$/}
+              value={this.props.state['Mobile number']}
               onChange={(e, id) => { this.props.setdata(e, id) }}
             />
             <br></br>
             <Inputfield type='email' placeholder='Email address'
+            value={this.props.state['Email address']}
               onChange={(e, id) => { this.props.setdata(e, id) }}
               exp={/^$|^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/}
             />
             <br></br>
             <Inputfield type='text' placeholder='Company name'
+            value={this.props.state['Company name']}
               onChange={(e, id) => { this.props.setdata(e, id) }}
 
             />
@@ -56,9 +62,9 @@ class Edit extends Component{
               singleDatePicker
               drops='up'
               selectedDate={this.props.state.DOB}
-              onApply={(e, p) => { this.props.updateState( 'DOB', moment(p.startDate).format('L') ) }}
+              onApply={(e, p) => { this.props.updateState( 'dateOfBirth', moment(p.startDate).format('L') ) }}
             >
-              <Input value={this.props.state.DOB} name='DOB' />
+              <Input value={this.props.state.dateOfBirth} name='DOB' />
             </DateRangePicker>
           </Collapse>
           <Dropdown caret onClick={() => this.props.toggle('opensecure')}>
@@ -67,6 +73,7 @@ class Edit extends Component{
           <Collapse isOpen={this.props.state.opensecure}>
             <Inputfield type='password' placeholder='Password'
               onChange={(e, id) => { this.props.updatestate( 'Password', e , () => this.props.setdata(e, id)) }}
+              value={this.props.state.Password}
               exp={/^$|^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/}
             /><br></br>
             <Label><b>Confirm password</b></Label>
@@ -98,7 +105,7 @@ class Edit extends Component{
               <Input value={this.props.state.RLD} name='DOB' />
             </DateRangePicker>
             <br></br>
-            <Select />
+            <Select value={this.props.state.personstatus}/>
             <br></br>
           </Collapse>
           <Dropdown caret onClick={() => this.props.toggle('openpool')}>
@@ -111,10 +118,10 @@ class Edit extends Component{
               inactiveLabel={'X '}
               activeLabel={'C'}
 
-              value={this.props.state.value}
+              value={this.props.state.manualPoolAccess}
               onToggle={(value) => {
                 this.props.updatestate(
-                  'value', !value
+                  'manualPoolAccess', !value
                 )
               }}
             />
@@ -126,6 +133,7 @@ class Edit extends Component{
           <Collapse isOpen={this.props.state.opennote}>
             <Inputfield type='text'
               placeholder='Note'
+              value={this.props.state.Note}
               onChange={(e, id) => { this.props.setdata(e, id) }}
             ></Inputfield>
           </Collapse>

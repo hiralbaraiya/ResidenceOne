@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import '../App.css';
 import './Admin.css';
 import Sidenav from '../components/Sidenav';
-import { Collapse, NavbarToggler, Navbar, Row, Col ,DropdownItem,DropdownMenu,DropdownToggle,UncontrolledDropdown} from 'reactstrap';
+import { Collapse, NavbarToggler, Navbar, Row, Col } from 'reactstrap';
 import User from './User';
 import Dashboard from './Dashboard'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import Notfound from './Notfound';
 import Profile from './Profile';
-import Reception from './Reception'
+import Reception from './Reception';
+import Family from './Family';
+import FamilyProfile from "./FamilyProfile";
 import {Dropdown} from '../components/Dropdown'
 
 class Admin extends Component {
@@ -30,7 +32,6 @@ class Admin extends Component {
   }
 
   render() {
-    let name=this.props.location.pathname
     return (
       <div >
         {this.props.location.state ? <div><Notfound /></div> :
@@ -68,6 +69,8 @@ class Admin extends Component {
                                 <Route exact path='/admin/dashboard' component={Dashboard} />
                                 <Route exact path='/admin/users' component={User} />
                                 <Route exact path='/admin/users/:id' component={Profile}/>
+                                <Route exact path='/admin/Families' component={Family}/>
+                                <Route exact path='/admin/Family/:id' component={FamilyProfile}/>
                                <Route exact path='/apps/Reception' component={Reception}/>
                                 <Redirect to={{
                                   pathname: `${this.props.location.pathname}`,

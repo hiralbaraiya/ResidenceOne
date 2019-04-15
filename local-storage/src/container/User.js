@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button, Input } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Button } from 'reactstrap';
 import classnames from 'classnames';
 import FaWheelChair from 'react-icons/lib/fa/wheelchair'
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom';
 import Notification from '../components/Notification'
 import Table from '../components/Table';
 import { getUserList } from '../Api/ResidenceApi';
-import { updateUser } from '../Api/ResidenceApi'
+import { updateUser } from '../Api/ResidenceApi';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default class User extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ export default class User extends React.Component {
       modal: false
     };
 
+    this.container={}
     this.toggleRow = this.toggleRow.bind(this);
 
     this.column = [
@@ -67,7 +69,7 @@ export default class User extends React.Component {
         accessor: 'picture',
         Cell: row => {
           return (
-            <img className='image' src={`${this.state.image}${row.value}`} alt="user" height="15" width="15"></img>
+            <img className='image' src={`${this.state.image}${row.value}`} height="15" width="15"  onError={(e)=>e.target.src=`${this.state.image}default-user.png`}></img>
           )
         }
       },
@@ -104,7 +106,12 @@ export default class User extends React.Component {
       {
         filterable: true,
         Header: 'Email',
-        accessor: 'email'
+        accessor: 'email',
+        Cell:(row)=>{
+          return(
+<a href={`mailto:${row.value}?subject=Mail from Our Site`}>{row.value}</a>  
+          )
+        }
       },
       // {
       //   sortable: false,
@@ -146,7 +153,6 @@ export default class User extends React.Component {
 
   toggleSelectAll() {
     let newSelected = {};
-
     if (this.state.selectAll === 0) {
       this.state.data.forEach(x => {
         newSelected[x.firstName] = true;
@@ -172,22 +178,25 @@ export default class User extends React.Component {
   }
 
 
-  markhandicap(id, status, index) {
+  markhandicap(id, status, index) { 
     if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
       updateUser(`updateisHandicapped/${status === 1 ? 0 : 1}`, { 'userId': id })
         .then((response) => {
-
+          let obj=[...this.state.data];
+          obj[index].isHandicapped=status === 1 ? 0 : 1
+          this.setState({data:obj})
         })
     }
   }
 
   getdata = (status) => {
+    console.log('cont',this.container)
     let url = `list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`
     getUserList(url)
-      .then((result) => {
+      .then((result) => { 
         (!result.error) ?
           this.setState({ data: result.response.data.data, image: result.response.data.imagePath, totalpage: Math.ceil(result.response.data.totalRecords / this.state.pagesize) })
-          : this.setState({ apierror: true })
+          :this.setState({apierror:true}) 
       })
   }
 
@@ -203,11 +212,10 @@ export default class User extends React.Component {
     }
   }
 
-
-
   togglemodal() {
     this.setState({ modal: !this.state.modal });
   }
+
   notify() {
     if (this.state.selectAll === 0) {
       alert('select atleast one')
@@ -216,12 +224,14 @@ export default class User extends React.Component {
       this.setState({ notify: !this.state.notify })
     }
   }
+
   handelchange = (e, id, status) => {
     console.log('handelchange')
     let obj = {};
     obj[id] = e
     this.setState(obj, () => { this.getdata(status) })
   }
+
   setdata(e, id) {
     let obj = {};
     obj[id] = e
@@ -248,7 +258,7 @@ export default class User extends React.Component {
               onClick={() => { this.toggle('2'); }}
             >
               Inactive
-            </NavLink>
+            </NavLink>  
           </NavItem>
         </Nav>
         <TabContent activeTab={this.state.activeTab}>

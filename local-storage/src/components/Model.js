@@ -20,11 +20,25 @@ class Model extends Component {
   adduser(){
     console.log('adduser')
     let token = localStorage.getItem('token');
-    Axios.post(`http://localhost:8080/api/user//updateisHandicapped/${1}`,
-      {'userId':'c9316676-1f70-419c-b43e-50500429edb6'}, {headers:{'token':token}})
+    Axios.post(`http://localhost:8080/api/user/signup`,
+      {   
+        'firstName':'hiral',
+                    'lastName':'baraiya',
+                    'email':'',
+                    'companyName':'',
+                    'residenceId':'',
+                    'familyId':'',
+                    'telephone':'',
+                    'status':true,
+                    'dateOfBirth':'',
+                    'activeFrom':'',
+                    'activeTo':'',
+                    'password':'',
+                    'manualPoolAccess':false
+      }, {headers:{'token':token}})
      
       .then((response) => {
-        console.log(response)
+        console.log(response,'adduser')
        
       })
       .catch((e) => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Texteditor from './Texteditor';
-import { Modal, ModalBody, ModalHeader, Button } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import AsyncSelect from 'react-select/lib/Async';
 import axios from 'axios';
 
@@ -24,6 +24,7 @@ class Notification extends Component {
                         label: key.name
                     }
                     response.push(obj);
+                    return null
                 })
 
                 this.setState({ default: response }, () => { console.log(this.state) })

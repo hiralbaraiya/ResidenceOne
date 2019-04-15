@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import AsyncSelect from 'react-select/lib/Async';
-import { Label, FormFeedback } from 'reactstrap';
 import axios from 'axios';
 import { debounce } from 'lodash';
 
@@ -23,11 +22,11 @@ class Select extends Component {
         let labelname
         this.props.value?labelname=this.props.value:labelname='shortName'
          let obj={
-           
           value: key.name,
           label: key[labelname]
          }
          response.push(obj);
+         return null
        })
 
        this.setState({default:response},()=>{console.log(this.state)})

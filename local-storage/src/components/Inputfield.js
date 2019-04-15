@@ -1,6 +1,5 @@
 import React,{Component} from 'react';
 import {Input,Label } from 'reactstrap';
-import { stringify } from 'querystring';
 
 class Inputfield extends Component{
     constructor(props){
@@ -26,6 +25,7 @@ this.setState({valid:false})
             <Label><b>{placeholder}</b></Label>
             <Input type={type} 
             placeholder={placeholder}
+            value={this.props.value}
             onChange={(e)=>{this.props.onChange(e.target.value,placeholder)}}
             onBlur={(e)=>{this.validate(e)}}/>
             {

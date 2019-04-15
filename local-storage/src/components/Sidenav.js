@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Nav, UncontrolledDropdown, DropdownToggle, Dropdown } from 'reactstrap';
+import { Nav, UncontrolledDropdown, Dropdown } from 'reactstrap';
 import Toggler from './Toggler';
 import FaArrowDown from 'react-icons/lib/io/android-arrow-dropdown-circle';
 import FaArrowUp from 'react-icons/lib/io/android-arrow-dropup-circle';

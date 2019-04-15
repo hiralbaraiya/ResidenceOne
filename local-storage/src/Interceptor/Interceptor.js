@@ -1,24 +1,31 @@
 import axios from 'axios';
-import history from '../History'
+import history from '../History';
+import { toast } from 'react-toastify';
 
 const base = 'http://localhost:8080/api/';
 export const get = (url,token) => {
   return (
     axios.get(`${base}${url}`,{ headers: { 'token': token } })
       .then((response) => {
+        let obj;
         if(response.data.message==='Invalid token'){
+          toast.error("Token expired !", {
+            position: toast.POSITION.TOP_RIGHT
+          });
           localStorage.removeItem('token')
          history.push('/login')
          return(obj={'response':response,'error':true})
         }
-        let obj={'response':response,'error':false}
+         obj={'response':response,'error':false}
         return (
          obj
         );
       })
       .catch((error) => {
         console.log(error,'erro')
-        
+        toast.error("Something went wrong !", {
+          position: toast.POSITION.TOP_RIGHT
+        });
         let obj={'response':error,'error':true}
         return (
          obj
@@ -37,6 +44,9 @@ export const post = (url, data,token) => {
         );
       })
       .catch((error)=> { 
+        toast.error("Something went wrong !", {
+          position: toast.POSITION.TOP_RIGHT
+        });
           let obj={'response':error,'error':true}
           return (
            obj
@@ -55,6 +65,9 @@ export const put = (url, data,token) => {
         );
       })
       .catch( (error) =>{
+        toast.error("Something went wrong !", {
+          position: toast.POSITION.TOP_RIGHT
+        });
         let obj={'response':error,'error':true}
         return (
          obj
@@ -73,6 +86,9 @@ export const delet = (url,token) => {
         );
       })
       .catch(function (error) {
+        toast.error("Something went wrong !", {
+          position: toast.POSITION.TOP_RIGHT
+        });
         let obj={'response':error,'error':true}
         return (
          obj

@@ -1,6 +1,6 @@
 
 .nav-tabs{
-  background: rgb(219, 222, 226);
+  background: #f3f3f3;
 }
 
 .logo{
@@ -61,17 +61,13 @@ font-size: 14px !important;
 .model{
   max-width:768px!important;
 }
+.Toastify__toast {
+  min-height: 30px!important
+}
 .textedit{
   height:200px;
 }
 
-
-.navigation{
-  position:fixed;
-  width:180px;
-  height:100vmax;
-  background-color:rgba(31, 51, 66, 0.959);
-}
 .drop{
   background: #f9f9f9;
 }
@@ -84,6 +80,18 @@ font-size: 14px !important;
   display: inline-block;
   float:right;
 }
+.navigation{
+  position:fixed;
+  width:180px;
+  height:100vmax;
+  background-color:rgba(31, 51, 66, 0.959);
+}
+
+.ReactTable .rt-tbody .rt-td {
+  white-space: normal!important;
+  word-wrap: break-word;
+}
+
 .b{
   position:fixed;
   margin-left:15px;
@@ -105,7 +113,10 @@ font-size: 14px !important;
   color:rgb(170, 178, 192);
 }
 
-
+.familyprofile{
+  font-size: 12px;
+  color:#777;
+}
 
 .link{
   color:rgb(170, 178, 192);
@@ -120,11 +131,11 @@ font-size: 14px !important;
 
 .rt-td{
   color:rgb(116, 118, 122);
-  font-size: 12px;
+  font-size: 10px;
   font-family: Arial, Helvetica, sans-serif;
 }
 .rt-tr{
   color:rgb(116, 118, 122);
-  font-size: 12px;
+  font-size: 10px;
   font-family: Arial, Helvetica, sans-serif;
 }

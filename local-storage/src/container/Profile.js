@@ -17,18 +17,62 @@ class Profile extends Component {
       RLD: null,
       opendata: false,
       opennote: false,
-      opensecure: false, value: false, openlinked: false, openpool: false
+      opensecure: false, manualPoolAccess: false, openlinked: false, openpool: false
     }
     this.updatestate = this.updatestate.bind(this)
     this.Toggle = this.Toggle.bind(this)
   }
 
+edituser=()=>{
+  let token=localStorage.getItem('token')
+  Axios.post(`http://localhost:8080/api/user/editProfile`,
+      {   
+        'firstName':this.state['First Name'],
+        'lastName':this.state['Last Name'],
+        'email':this.state['Email address'],
+        'companyName':this.state['Company name'],
+       'residenceId':this.state.residenceId,
+        'familyId':this.state.familyId,
+        'telephone':this.state['Mobile number'],
+        'status':this.state.status,
+        dateOfBirth:'',
+        'oldPassword':'',
+        'newPassword':'',
+        activeFrom:'',
+        activeTo:'',
+        'confirmPassword':'',
+        'manualPoolAccess':this.state.manualPoolAccess
+      }, {headers:{'token':token}})
+      .then((response) => {
+        console.log(response,'adduser')
+       
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+}
+
   componentWillMount() {
    
       getUserList(`detail/${this.props.match.params.id}`)
       .then((result) => {
+        console.log('props:',this.props.match,'result',result)
         if (result.response.data.status) {
-          this.setState({ data: result.response.data.data })
+          let obj={...result.response.data.data}
+          this.setState({'First Name':obj.firstName,
+        'Last Name':obj.lastName,
+        'Email adress':obj.email,
+        'Company name':obj.companyName,
+        residenceId:obj.residenceId,
+        familyId:obj.familyId,
+        'Mobile number':obj.telephone,
+        status:obj.status,
+        dateOfBirth:obj.dateOfBirth,
+        personstatus:obj.personStatus,
+        activeFrom:obj.activeFrom,
+        activeTo:obj.activeTo,
+        manualPoolAccess:obj.manualPoolAccess
+        })
         }
         else {
           this.props.history.push('/admin/users')
@@ -45,7 +89,7 @@ class Profile extends Component {
   updatestate(key, value) {
     console.log('updatestate', value)
     let obj = {}
-    obj[key] = value
+    obj[value] = key
     this.setState(obj, () => { console.log(this.state) });
   }
 
@@ -106,7 +150,7 @@ class Profile extends Component {
                 updatestate={this.updatestate}
               />
                 <Button style={{ 'backgroundColor': '#65cea7', 'border': '1px solid #3ec291', 'float': 'right' }}
-                  onClick={() => this.adduser()}>Submit</Button>
+                  onClick={() => this.edituser()}>Submit</Button>
                 <Button style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43', 'float': 'right' }}
                   onClick={() => { this.setState({ edit: false }) }}>Cancel</Button>
               </> :

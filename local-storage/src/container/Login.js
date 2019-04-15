@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Input, Button, Label } from 'reactstrap';
+import { Button, Label } from 'reactstrap';
 import axios from 'axios';
 import './Login.css';
 import Inputfield from '../components/Inputfield';
+import { toast } from 'react-toastify';
 
 class Login extends Component {
   constructor(props) {
@@ -27,10 +28,16 @@ class Login extends Component {
       .then((response) => {
         console.log(response)
         if(response.data.status===false){
+          toast.error(response.data.message, {
+            position: toast.POSITION.TOP_RIGHT
+          }); 
           this.setState({error:true})
         }
         else{
         localStorage.setItem('token', response.data.token)
+        toast.success("Welcome to admin dashboard !", {
+          position: toast.POSITION.TOP_RIGHT
+        });
         this.props.history.push('/admin/dashboard')
         }
       })
@@ -41,6 +48,9 @@ class Login extends Component {
 
   componentWillMount(){
     if(localStorage.getItem('token')){
+      toast.error("seems you are already logged in!", {
+        position: toast.POSITION.TOP_RIGHT
+      }); 
     this.props.history.push('/admin/dashboard')
     }
   }

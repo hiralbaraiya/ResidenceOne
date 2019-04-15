@@ -30,7 +30,7 @@ class Table extends Component {
         if (list.id === 'fullName') { id = 'name' }
         else { id = list.id }
         url = `${url}${id}=${list.value}&`
-        console.log(url)
+        return null
       })
       :
       console.log(null)
@@ -58,6 +58,7 @@ class Table extends Component {
         onSortedChange={e => { this.Sort(e, this.props.status) }}
         pages={this.props.totalpage}
         page={this.props.page - 1}
+        
         onPageSizeChange={(p) => {
           this.props.handelchange(p,'pagesize', this.props.status)
         }}

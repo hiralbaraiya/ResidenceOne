@@ -59,7 +59,7 @@ class Reception extends Component {
         accessor: 'picture',
         Cell: row => {
           return (
-            <img className='image' src={`http://localhost:8080/images/lacadenelle13008fr/users/${row.value}`} alt="user" height="15" width="15"></img>
+            <img className='image' src={`http://localhost:8080/images/lacadenelle13008fr/users/${row.value}`} alt="user" height="15" width="15"  onError={(e)=>e.target.src=`${this.state.image}default-user.png`}></img>
           )
         }
       },
