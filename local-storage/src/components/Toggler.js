@@ -13,8 +13,8 @@ class Toggler extends Component{
                 this.props.items.map((name,i)=>{
                   return(
                     <NavItem key={i}>
-                   
-              <Link to={`/${this.props.path}/${name}`} className='link'>{name}<User/></Link>
+                  <User/> 
+              <Link to={`/${this.props.path}/${name}`} className='link'>{name}</Link>
               </NavItem>
                   )
                 })

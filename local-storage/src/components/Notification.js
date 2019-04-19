@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Texteditor from './Texteditor';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader ,Button} from 'reactstrap';
 import AsyncSelect from 'react-select/lib/Async';
 import axios from 'axios';
 
@@ -39,19 +39,14 @@ class Notification extends Component {
 
                     <ModalHeader style={{ 'minHeight': '60px' }} toggle={this.props.toggle}>Add User</ModalHeader>
                     <ModalBody >
-                        <input type='checkbox' />
-                        <AsyncSelect
-                            isClearable
-                            
-                            defaultOptions={this.state.default}
-                        />
+                  
                         <Texteditor
                             onChange={(value) => { this.setState({ text: value }) }}
                         />
-
+                        
                     </ModalBody>
 
-
+                    <Button color='success'><a href={`mailto:${this.props.email}`}>Send notification</a></Button>
                 </Modal>
 
 

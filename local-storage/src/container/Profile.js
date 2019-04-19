@@ -5,7 +5,8 @@ import classnames from 'classnames';
 import Faellips from 'react-icons/lib/fa/ellipsis-v';
 import { Dropdown } from '../components/Dropdown';
 import Edit from '../components/Edit';
-import {getUserList} from '../Api/ResidenceApi'
+import {getUserList} from '../Api/ResidenceApi';
+import { updateUser } from '../Api/ResidenceApi';
 
 class Profile extends Component {
   constructor(props) {
@@ -59,8 +60,11 @@ edituser=()=>{
         console.log('props:',this.props.match,'result',result)
         if (result.response.data.status) {
           let obj={...result.response.data.data}
-          this.setState({'First Name':obj.firstName,
+          this.setState({
+            data:obj,
+            'First Name':obj.firstName,
         'Last Name':obj.lastName,
+        'picture':obj.picture,
         'Email adress':obj.email,
         'Company name':obj.companyName,
         residenceId:obj.residenceId,
@@ -78,6 +82,30 @@ edituser=()=>{
           this.props.history.push('/admin/users')
         }
       })
+  }
+
+  edit(id, status) {
+    console.log(status)
+    if (window.confirm("Are you sure you want to change user status from active to inactive?")) {
+      getUserList(`updateStatus/${id}/${status === '1' ? 0 : 1}`)
+        .then((result) => {
+          (!result.error) ?
+            this.getdata() :
+            this.setState({ apierror: true })
+        })
+    }
+  }
+
+
+  markhandicap(id, status) {
+    if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
+      updateUser(`updateisHandicapped/${status === 1 ? 0 : 1}`, { 'userId': id })
+        .then((response) => {
+          let obj={...this.state.data};
+          obj.isHandicapped=status === 1 ? 0 : 1
+          this.setState( obj )
+        })
+    }
   }
 
   Toggle(data) {
@@ -99,7 +127,7 @@ edituser=()=>{
 
   }
   render() {
-    let { positions, family } = this.state.data?this.state.data:{positions:undefined,family:undefined}
+    let { positions, family ,isHandicapped,status} = this.state.data?this.state.data:{positions:undefined,family:undefined,isHandicapped:undefined,status:undefined}
     let name=positions?positions.name:null
     let fname=family?family.name:''
     let id=family?family.families_units[0].unit.officialId:''
@@ -107,7 +135,7 @@ edituser=()=>{
       <div>
        {fname?<Label>Family Name:{fname}</Label>:<Label></Label>}
         <br></br>
-        <span className={`dot`}></span>
+        {this.state.status==='1'?<span className={`dot`}></span>:<span className={`dotred`}></span>}
         <Label style={{ 'float': 'right' }}>{name}</Label>
 
         <br></br>
@@ -138,9 +166,10 @@ edituser=()=>{
             list={[<Button color='link' onClick={() => { this.setState({ edit: !this.state.edit }) }}>
               {this.state.edit ? <>view profile</> : <>edit profile</>}
             </Button>,
-              'Mark as handicaped',
-              'Mark as inactive',
-              'Help']} />
+              <Button color='link' onClick={() => this.markhandicap(this.state.data.id, isHandicapped)}>{isHandicapped === 1 ? <p>Mark as Not Handicapped</p> : <p>mark as Handicapped</p>}</Button>,
+              <Button color='link' onClick={() => this.edit(this.state.data.id, status)}>{status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
+               ,
+              ]} />
           <TabPane tabId="1">
             {this.state.edit ?
               <>  <Edit
@@ -154,7 +183,7 @@ edituser=()=>{
                 <Button style={{ 'backgroundColor': '#fc8675', 'border': '1px solid #fb5a43', 'float': 'right' }}
                   onClick={() => { this.setState({ edit: false }) }}>Cancel</Button>
               </> :
-              <img src={`http://localhost:8080/images/lacadenelle13008fr/users/hi.png`} alt="user" height='316' width='260'></img>
+              <img src={this.state.picture} alt="user" height='316' width='260'></img>
             }
           </TabPane>
           <TabPane tabId="2">

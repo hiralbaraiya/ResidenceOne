@@ -10,7 +10,10 @@ import { Link } from 'react-router-dom';
 import Notfound from './Notfound';
 import Profile from './Profile';
 import Reception from './Reception';
+import Vehicle from './Vehicle';
+import Units from './Units';
 import Family from './Family';
+import Owner from './Owner';
 import FamilyProfile from "./FamilyProfile";
 import {Dropdown} from '../components/Dropdown'
 
@@ -71,6 +74,9 @@ class Admin extends Component {
                                 <Route exact path='/admin/users/:id' component={Profile}/>
                                 <Route exact path='/admin/Families' component={Family}/>
                                 <Route exact path='/admin/Family/:id' component={FamilyProfile}/>
+                                <Route exact path='/admin/Units' component={Units}/>
+                                <Route exact path='/admin/Owners' component={Owner}/>
+                                <Route exact path='/admin/Vehicles' component={Vehicle}/>
                                <Route exact path='/apps/Reception' component={Reception}/>
                                 <Redirect to={{
                                   pathname: `${this.props.location.pathname}`,
@@ -80,6 +86,12 @@ class Admin extends Component {
                               </Switch>
                             </div>
                           </Col>
+                        </Row>
+                        <Row style={{textAlign:'center',fontSize:'12px'}}>
+                        <div style={{width:'100%',margin:'auto',fontWeight:700,verticalAlign:'center'}}>
+                          <img src='http://localhost:8080/images/lacadenelle13008fr/users/residenceone_official_logo.png' alt='residence one' 
+                          style={{maxWidth:'100px'}}></img>
+                          <strong>&copy; 2019</strong></div>
                         </Row>
                       </Col>
                     </Row>

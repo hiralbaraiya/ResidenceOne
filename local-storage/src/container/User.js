@@ -31,12 +31,13 @@ export default class User extends React.Component {
       modal: false
     };
 
-    this.container={}
+    this.container = {}
     this.toggleRow = this.toggleRow.bind(this);
 
     this.column = [
       {
         sortable: false,
+        width: 40,
         Header: () => {
           return (<input type='checkbox'
             checked={this.state.selectAll === 1}
@@ -67,9 +68,10 @@ export default class User extends React.Component {
         sortable: false,
         Header: 'profile picture',
         accessor: 'picture',
+        width: 100,
         Cell: row => {
           return (
-            <img className='image' src={`${this.state.image}${row.value}`} height="15" width="15"  onError={(e)=>e.target.src=`${this.state.image}default-user.png`}></img>
+            <img className='image' src={`${this.state.image}${row.value}`} height="10px" width="10px" onError={(e) => e.target.src = `${this.state.image}default-user.png`}></img>
           )
         }
       },
@@ -107,9 +109,9 @@ export default class User extends React.Component {
         filterable: true,
         Header: 'Email',
         accessor: 'email',
-        Cell:(row)=>{
-          return(
-<a href={`mailto:${row.value}?subject=Mail from Our Site`}>{row.value}</a>  
+        Cell: (row) => {
+          return (
+            <a href={`mailto:${row.value}?subject=Mail from Our Site`}>{row.value}</a>
           )
         }
       },
@@ -171,32 +173,32 @@ export default class User extends React.Component {
       getUserList(`updateStatus/${id}/${status === '1' ? 0 : 1}`)
         .then((result) => {
           (!result.error) ?
-          this.getdata(status === '1' ? true : false):
-          this.setState({ apierror: true })
+            this.getdata(status === '1' ? true : false) :
+            this.setState({ apierror: true })
         })
     }
   }
 
 
-  markhandicap(id, status, index) { 
+  markhandicap(id, status, index) {
     if (window.confirm("Are you sure you want to change handicapped status forMARTIN ?")) {
       updateUser(`updateisHandicapped/${status === 1 ? 0 : 1}`, { 'userId': id })
         .then((response) => {
-          let obj=[...this.state.data];
-          obj[index].isHandicapped=status === 1 ? 0 : 1
-          this.setState({data:obj})
+          let obj = [...this.state.data];
+          obj[index].isHandicapped = status === 1 ? 0 : 1
+          this.setState({ data: obj })
         })
     }
   }
 
   getdata = (status) => {
-    console.log('cont',this.container)
+    console.log('cont', this.container)
     let url = `list?page=${this.state.page}&limit=${this.state.pagesize}&${this.state.filterurl}status=${status}&${this.state.sorturl}`
     getUserList(url)
-      .then((result) => { 
+      .then((result) => {
         (!result.error) ?
           this.setState({ data: result.response.data.data, image: result.response.data.imagePath, totalpage: Math.ceil(result.response.data.totalRecords / this.state.pagesize) })
-          :this.setState({apierror:true}) 
+          : this.setState({ apierror: true })
       })
   }
 
@@ -222,7 +224,21 @@ export default class User extends React.Component {
     }
     else {
       this.setState({ notify: !this.state.notify })
+      let string='';
+      let data=this.state.selected
+      console.log(data)
+      Object.keys(data).map((name)=>{
+        for(let i=0;i<20;i++){
+        if(this.state.data[i].firstName===name){
+          string=`${string}${this.state.data[i].email},`
+          break;
+        }
+        }
+      })
+      this.setState({link:string})
+      console.log(string)
     }
+    
   }
 
   handelchange = (e, id, status) => {
@@ -258,7 +274,7 @@ export default class User extends React.Component {
               onClick={() => { this.toggle('2'); }}
             >
               Inactive
-            </NavLink>  
+            </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={this.state.activeTab}>
@@ -268,12 +284,12 @@ export default class User extends React.Component {
             list={[<Button color='link' onClick={() => this.togglemodal()}>Add new user</Button>,
             <Button color='link' onClick={() => this.notify()}>Send notification</Button>
               ,
-              'Pre-prepared notification',
-              'Help']} />
+             /* 'Pre-prepared notification',
+    'Help'*/]} />
           <Model modal={this.state.modal} toggle={() => { this.togglemodal() }}
             setdata={(e, id) => { this.setdata(e, id) }}
           />
-          <Notification isOpen={this.state.notify} toggle={() => { this.notify() }} />
+          <Notification isOpen={this.state.notify} toggle={() => { this.notify() }} email={this.state.link} />
           <TabPane tabId="1">
             <Row>
               <Col sm="12">

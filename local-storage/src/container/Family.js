@@ -103,9 +103,9 @@ class Family extends Component {
             <Dropdown
               icon={<Faellips />}
               list={[<Link to={`users/${row.original.mainPersonId}`}>Go to main person's profile</Link>,
-              <Button color='link'>{row.original.status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
-                , <Button color='link'>Send notification</Button>,
-                <Button color='link'>Help</Button>
+              // <Button color='link'>{row.original.status === '1' ? <p>Mark as Inactive</p> : <p>mark as Active</p>}</Button>
+              //   , <Button color='link'>Send notification</Button>,
+              //   <Button color='link'>Help</Button>
               ]} />
           )
         }

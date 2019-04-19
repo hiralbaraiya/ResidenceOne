@@ -192,7 +192,19 @@ class FamilyProfile extends Component {
           <NavItem>
             <NavLink
               className={classnames({ active: this.state.activeTab === '8' })}
-              onClick={() => { this.toggle('8'); }}
+              onClick={() => {
+                this.setState({ activeTab: '8' }, () => {
+                  getFamily(`packets-List/${this.props.match.params.id}?page=1&limit=20&`)
+                    .then((result) => {
+                      if (!result.error) {
+                        this.setState({ packets: result.response.data.data ,shares:result.response.data.totalShares})
+                      }
+                      else {
+                        this.setState({ apierror: true })
+                      }
+                    })
+                })
+              }}
             >
               Packets
             </NavLink>
@@ -278,8 +290,73 @@ class FamilyProfile extends Component {
               columns={this.col}
             />:''}
           </TabPane>
+          <TabPane tabId='8'>
+         
+           <Nav tabs>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.active === '1' })}
+                  onClick={() => { this.Toggle('1') }}
+                >
+                  To be recovered
+            </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.active === '2' })}
+                  onClick={() => { this.Toggle('2') }}
+                >
+                  Already recovered
+            </NavLink>
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={this.state.active}>
+              <TabPane tabId={this.state.active}>
+                {this.state.packets ? this.state.packets.length === 0 ? <p>no rows found</p> :
+                  <div>
+                    <ReactTable
+              data={this.state.packets}
+              minRows={0}
+              showPagination={false}
+              columns={[
+                {
+                  Header:'Number',
+                  accessor:'tempIdNumber'
+                },
+                {
+                  Header:'Packet picture',
+                 
+                },
+                {
+                  Header:'Packet type',
+                  accessor:'packet_type.name'
+                },
+                {
+                  Header:'Date',
+                  accessor:'updatedAt'
+                },
+                {
+                  Header:'Time',
+                  accessor:'updatedAt'
+                },
+                {
+                  Header:'Name',
+                  accessor:'user.fullName'
+                },
+                {
+                  Header:'Note',
+                  accessor:'noteByGuard'
+                }
+              ]}
+            />
+                  </div>
+                  : 'no state'}
+              </TabPane>
+            </TabContent>
+           
+          </TabPane>
           <TabPane tabId='9'>
-          {this.state.purchase ? this.state.purchase.length === 0 ? <p>There are no Units registered for this residence yet</p> :
+          {this.state.purchase ? this.state.purchase.length === 0 ? <p>There are no purchases exists for this family yet</p> :
             <ReactTable
               data={this.state.purchase}
               minRows={0}

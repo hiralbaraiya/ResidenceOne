@@ -80,6 +80,15 @@ font-size: 14px !important;
   display: inline-block;
   float:right;
 }
+.dotred {
+  height: 20px;
+  width: 20px;
+  background:red;
+  border-radius: 50%;
+  margin-left: 10px;
+  display: inline-block;
+  float:right;
+}
 .navigation{
   position:fixed;
   width:180px;
